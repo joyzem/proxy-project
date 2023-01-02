@@ -11,10 +11,10 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/joyzem/proxy-project/internal/services/product"
-	"github.com/joyzem/proxy-project/internal/services/product/implementation"
-	"github.com/joyzem/proxy-project/internal/services/product/transport"
-	httptransport "github.com/joyzem/proxy-project/internal/services/product/transport/http"
+	"github.com/joyzem/proxy-project/services/product"
+	"github.com/joyzem/proxy-project/services/product/implementation"
+	"github.com/joyzem/proxy-project/services/product/transport"
+	httptransport "github.com/joyzem/proxy-project/services/product/transport/http"
 
 	kitoc "github.com/go-kit/kit/tracing/opencensus"
 	kithttp "github.com/go-kit/kit/transport/http"

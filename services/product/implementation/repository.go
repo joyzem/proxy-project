@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/joyzem/proxy-project/internal/services/product"
+	"github.com/joyzem/proxy-project/services/product"
 )
 
 type repository struct {

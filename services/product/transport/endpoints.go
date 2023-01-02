@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kit/kit/endpoint"
-	"github.com/joyzem/proxy-project/internal/services/product"
+	"github.com/joyzem/proxy-project/services/product"
 )
 
 type Endpoints struct {

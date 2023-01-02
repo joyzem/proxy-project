@@ -3,7 +3,7 @@ package product
 import (
 	"context"
 
-	"github.com/joyzem/proxy-project/internal/services/unit"
+	"github.com/joyzem/proxy-project/services/unit"
 )
 
 // Описание структуры "Товар"

@@ -10,7 +10,7 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
-	"github.com/joyzem/proxy-project/internal/services/product/transport"
+	"github.com/joyzem/proxy-project/services/product/transport"
 )
 
 var (

@@ -1,6 +1,6 @@
 package transport
 
-import "github.com/joyzem/proxy-project/internal/services/product"
+import "github.com/joyzem/proxy-project/services/product"
 
 type (
 	CreateProductRequest struct {
