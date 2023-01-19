@@ -13,7 +13,7 @@ func main() {
 		http.ServeFile(w, r, "views/employees.html")
 	})
 	fmt.Println("Employees service started...")
-	http.Handle("/share/", http.StripPrefix("/share/", http.FileServer(http.Dir("../../../share"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../../../static"))))
 	http.Handle("/employee/js/", http.StripPrefix("/employee/js/", http.FileServer(http.Dir("views"))))
 	http.ListenAndServe(":8084", nil)
 }

@@ -1,10 +1,9 @@
 package utils
 
 import (
-	"github.com/go-kit/log"
-	"github.com/go-kit/log/level"
+	"fmt"
 )
 
-func LogError(logger *log.Logger, err error) {
-	level.Error(*logger).Log("err", err.Error())
+func LogError(err error) {
+	fmt.Printf("error: %s\n", err.Error())
 }

@@ -3,22 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="/share/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/materialize.css">
     <!-- Materialize JavaScript -->
-    <script src="/share/js/materialize.min.js"></script>
+    <script src="/static/js/materialize.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Контрагенты</title>
 </head>
 
 <body class="has-fixed-sidenav">
     <header>
-        <ul id="sidenav-left" class="sidenav" style="transform: translateX(0px);">
-            <li class="logo-container">Контрагенты<i class="material-icons left">people</i></li>
-            <li class="bold"><a href="/customer/" class="waves-effect">О сервисе</a>
-            </li>
-            <li class="bold active"><a href="/customer/customers/" class="waves-effect">Контрагенты</a>
-            </li>
-        </ul>
     </header>
     <main class="white">
         <div class="container">
@@ -30,7 +23,21 @@
             </div>
         </div>
     </main>
-    <script type="text/javascript" src="/share/js/nav.js"></script>
+    <script type="text/javascript" src="/static/js/nav.js"></script>
+    <script type="text/javascript" src="/static/js/sidenav.js"></script>
+    <script>
+        var sidebarLinks = [
+            {
+                label:"О сервисе",
+                href:"/customer/",
+            },
+            {
+                label:"Контрагенты",
+                href:"/customer/customers/"
+            }
+        ];
+        createSideNav("Контрагенты", "people", sidebarLinks)
+    </script>
 </body>
 
 </html>

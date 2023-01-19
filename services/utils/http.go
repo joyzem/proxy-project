@@ -49,25 +49,16 @@ func DecodeBody(r *http.Request, dest interface{}) error {
 	return json.Unmarshal(body, &dest)
 }
 
-type BaseResponse struct {
-	Response interface{} `json:"data"`
-	Success  bool        `json:"success"`
-}
-
 // Закодировать ответ, содержащий ошибку
 func EncodeErrorResponse(_ context.Context, err error, w http.ResponseWriter) {
 	if err == nil {
 		panic("encodeError with nil error")
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(codeFrom(err))
+	w.WriteHeader(http.StatusInternalServerError)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"error": err.Error(),
 	})
-}
-
-func codeFrom(err error) int {
-	return http.StatusInternalServerError
 }
 
 func EncodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
@@ -77,11 +68,7 @@ func EncodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 		return nil
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	var baseResponse = BaseResponse{
-		Response: response,
-		Success:  true,
-	}
-	return json.NewEncoder(w).Encode(baseResponse)
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Для проверки, является ли объект ошибкой

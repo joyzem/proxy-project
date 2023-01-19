@@ -5,8 +5,9 @@ WORKDIR /app/services/home
 
 # Copy the source code into the container
 COPY /services/home /app/services/home
-COPY .././go.mod /app
-COPY .././go.sum /app
+COPY /services/utils /app/services/utils
+COPY ../go.mod /app
+COPY ../go.sum /app
 
 RUN go build -o main .
 

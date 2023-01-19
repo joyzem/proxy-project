@@ -14,7 +14,7 @@ func main() {
 		http.ServeFile(w, r, "views/organizations.html")
 	})
 
-	http.Handle("/share/", http.StripPrefix("/share/", http.FileServer(http.Dir("../../../share"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../../../static"))))
 	fmt.Println("Organizations service started...")
 	http.ListenAndServe(":8082", nil)
 }

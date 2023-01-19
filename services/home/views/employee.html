@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" type="text/css" href="/share/css/materialize.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/materialize.css">
   <!-- Materialize JavaScript -->
   <script src="/static/style/materialize.min.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -21,9 +21,42 @@
       </div>
     </div>
   </main>
-  <script type="text/javascript" src="/share/js/materialize.min.js"></script>
-  <script src="/share/js/nav.js"></script>
-  <script type="text/javascript" src="/home/js/sidenav.js"></script>
+  <script type="text/javascript" src="/static/js/materialize.min.js"></script>
+  <script src="/static/js/nav.js"></script>
+  <script type="text/javascript" src="/static/js/sidenav.js"></script>
+  <script>
+    var items = [
+      {
+        label: 'О проекте',
+        href: '/',
+      },
+      {
+        label: 'Доверенности',
+        href: '/about-proxy/',
+      },
+      {
+        label: 'Товары',
+        href: '/about-product/',
+      },
+      {
+        label: 'Сотрудники',
+        href: '/about-employee/',
+      },
+      {
+        label: 'Контрагенты',
+        href: '/about-customer/',
+      },
+      {
+        label: 'Организации',
+        href: '/about-organization/',
+      },
+      {
+        label: 'Счета',
+        href: '/about-account/',
+      },
+    ];
+    createSideNav("Wiki", "language", items)
+  </script>
 </body>
 
 </html>

@@ -3,16 +3,18 @@ FROM golang:alpine as builder
 # Set the working directory to the app directory
 # The path must include "/services/product/backend" path because the code use s
 # this path
-WORKDIR /app/services/product/backend
+WORKDIR /app/services/product/backend/cmd
 
 # Copy the source code into the container
 COPY /services/product/backend /app/services/product/backend
+COPY /services/product/domain /app/services/product/domain
 COPY /services/utils /app/services/utils
-COPY ../../go.mod /app
-COPY ../../go.sum /app
+COPY go.mod /app
+COPY go.sum /app
 
 RUN go mod download
-RUN cd /app/services/product/backend/cmd && go build -o main .
+
+RUN go build -o main .
 
 FROM alpine
 

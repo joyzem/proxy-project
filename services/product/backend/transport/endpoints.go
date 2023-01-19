@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kit/kit/endpoint"
-	product "github.com/joyzem/proxy-project/services/product/backend"
+	"github.com/joyzem/proxy-project/services/product/backend/service"
 )
 
 type Endpoints struct {
@@ -18,7 +18,7 @@ type Endpoints struct {
 	DeleteUnit    endpoint.Endpoint
 }
 
-func MakeEndpoints(s product.Service) Endpoints {
+func MakeEndpoints(s service.Service) Endpoints {
 	return Endpoints{
 		CreateProduct: makeCreateProductEndpoint(s),
 		GetProducts:   makeGetProductsEndpoint(s),
@@ -31,15 +31,15 @@ func MakeEndpoints(s product.Service) Endpoints {
 	}
 }
 
-func makeCreateProductEndpoint(s product.Service) endpoint.Endpoint {
+func makeCreateProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CreateProductRequest)
-		product, err := s.CreateProduct(ctx, req.Name, req.Price, req.Unit)
-		return CreateProductResponse{Product: product, Err: err}, err
+		service, err := s.CreateProduct(ctx, req.Name, req.Price, req.UnitId)
+		return CreateProductResponse{Product: service, Err: err}, err
 	}
 }
 
-func makeGetProductsEndpoint(s product.Service) endpoint.Endpoint {
+func makeGetProductsEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		products, err := s.GetProducts(ctx)
 		return GetProductsResponse{
@@ -50,15 +50,15 @@ func makeGetProductsEndpoint(s product.Service) endpoint.Endpoint {
 	}
 }
 
-func makeUpdateProductEndpoint(s product.Service) endpoint.Endpoint {
+func makeUpdateProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(UpdateProductRequest)
-		product, err := s.UpdateProduct(ctx, req.Product)
-		return UpdateProductResponse{Product: product, Err: err}, err
+		service, err := s.UpdateProduct(ctx, req.Product)
+		return UpdateProductResponse{Product: service, Err: err}, err
 	}
 }
 
-func makeDeleteProductEndpoint(s product.Service) endpoint.Endpoint {
+func makeDeleteProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(DeleteProductRequest)
 		err := s.DeleteProduct(ctx, req.Id)
@@ -66,7 +66,7 @@ func makeDeleteProductEndpoint(s product.Service) endpoint.Endpoint {
 	}
 }
 
-func makeDeleteUnitEndpoint(s product.Service) endpoint.Endpoint {
+func makeDeleteUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(DeleteUnitRequest)
 		err := s.DeleteUnit(ctx, req.Id)
@@ -74,7 +74,7 @@ func makeDeleteUnitEndpoint(s product.Service) endpoint.Endpoint {
 	}
 }
 
-func makeUpdateUnitEndpoint(s product.Service) endpoint.Endpoint {
+func makeUpdateUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(UpdateUnitRequest)
 		unit, err := s.UpdateUnit(ctx, req.Unit)
@@ -82,7 +82,7 @@ func makeUpdateUnitEndpoint(s product.Service) endpoint.Endpoint {
 	}
 }
 
-func makeGetUnitsEndpoint(s product.Service) endpoint.Endpoint {
+func makeGetUnitsEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		units, err := s.GetUnits(ctx)
 		return GetUnitsResponse{
@@ -93,7 +93,7 @@ func makeGetUnitsEndpoint(s product.Service) endpoint.Endpoint {
 	}
 }
 
-func makeCreateUnitEndpoint(s product.Service) endpoint.Endpoint {
+func makeCreateUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CreateUnitRequest)
 		unit, err := s.CreateUnit(ctx, req.Unit)

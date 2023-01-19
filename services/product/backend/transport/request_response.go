@@ -1,29 +1,31 @@
 package transport
 
-import product "github.com/joyzem/proxy-project/services/product/backend"
+import (
+	"github.com/joyzem/proxy-project/services/product/domain"
+)
 
 type (
 	CreateProductRequest struct {
-		Name  string       `json:"name"`
-		Price int32        `json:"price"`
-		Unit  product.Unit `json:"unit"`
+		Name   string `json:"name"`
+		Price  int    `json:"price"`
+		UnitId int    `json:"unit_id"`
 	}
 	CreateProductResponse struct {
-		Product *product.Product `json:"product"`
-		Err     error            `json:"error"`
+		Product *domain.Product `json:"product"`
+		Err     error           `json:"error"`
 	}
 	GetProductsRequest struct {
 	}
 	GetProductsResponse struct {
-		Products []product.Product `json:"products"`
-		Err      error             `json:"error"`
+		Products []domain.Product `json:"products"`
+		Err      error            `json:"error"`
 	}
 	UpdateProductRequest struct {
-		Product product.Product `json:"product"`
+		Product domain.Product `json:"product"`
 	}
 	UpdateProductResponse struct {
-		Product *product.Product `json:"product"`
-		Err     error            `json:"error"`
+		Product *domain.Product `json:"product"`
+		Err     error           `json:"error"`
 	}
 	DeleteProductRequest struct {
 		Id int64 `json:"id"`
@@ -35,21 +37,21 @@ type (
 		Unit string `json:"unit"`
 	}
 	CreateUnitResponse struct {
-		Unit *product.Unit `json:"unit"`
-		Err  error         `json:"error"`
+		Unit *domain.Unit `json:"unit"`
+		Err  error        `json:"error"`
 	}
 	GetUnitsRequest struct {
 	}
 	GetUnitsResponse struct {
-		Units []product.Unit `json:"units"`
-		Err   error          `json:"error"`
+		Units []domain.Unit `json:"units"`
+		Err   error         `json:"error"`
 	}
 	UpdateUnitRequest struct {
-		Unit product.Unit `json:"unit"`
+		Unit domain.Unit `json:"unit"`
 	}
 	UpdateUnitResponse struct {
-		Unit *product.Unit `json:"unit"`
-		Err  error         `json:"error"`
+		Unit *domain.Unit `json:"unit"`
+		Err  error        `json:"error"`
 	}
 	DeleteUnitRequest struct {
 		Id int64 `json:"id"`

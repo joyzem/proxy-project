@@ -2,61 +2,97 @@ version: '3'
 
 services:
   product-back:
+    image: joyzem/project:product-back
+    container_name: product-back
     build: 
       context: .
       dockerfile: ./services/product/backend/cmd/Dockerfile
+    environment:
+      - DATABASE_HOST=database
+      - DATABASE_USER=user
     ports:
       - "8080:8080"
     depends_on:
       - database
   product-front:
+    image: joyzem/project:product-front
+    container_name: product-front
     build:
       context: .
-      dockerfile: ./services/product/frontend/Dockerfile
+      dockerfile: ./services/product/frontend/cmd/Dockerfile
+    environment:
+      - PRODUCT_BACKEND_ADDRESS=http://product-back:8080
     volumes:
-      - ./share:/app/share
+      - ./static:/app/static
     ports:
       - "8081:8081"
   organization-front:
+    image: joyzem/project:organization-front
+    container_name: organization-front
     build:
       context: .
       dockerfile: ./services/organization/frontend/Dockerfile
     volumes: 
-      - ./share:/app/share
+      - ./static:/app/static
     ports:
       - "8082:8082"
   account-front:
+    image: joyzem/project:account-front
+    container_name: account-front
     build:
       context: .
       dockerfile: ./services/account/frontend/Dockerfile
     volumes:
-      - ./share:/app/share
+      - ./static:/app/static
     ports:
       - "8083:8083"
   employee-front:
+    image: joyzem/project:employee-front
+    container_name: employee-front
     build:
       context: .
       dockerfile: ./services/employee/frontend/Dockerfile
     volumes:
-      - ./share:/app/share
+      - ./static:/app/static
     ports:
       - "8084:8084"
   customer-front:
+    image: joyzem/project:customer-front
+    container_name: customer-front
     build: 
       context: .
       dockerfile: ./services/customer/frontend/Dockerfile
     volumes:
-      - ./share:/app/share
+      - ./static:/app/static
     ports:
       - "8085:8085"
   proxy-front:
+    image: joyzem/project:proxy-front
+    container_name: proxy-front
     build:
       context: .
       dockerfile: ./services/proxy/frontend/Dockerfile
     volumes: 
-      - ./share:/app/share
+      - ./static:/app/static
     ports:
       - "8086:8086"
+  home-front:
+    image: joyzem/project:home-front
+    container_name: home-front
+    build:
+      context: .
+      dockerfile: ./services/home/Dockerfile
+    volumes:
+      - ./static:/app/static
+    environment:
+      - PRODUCT_ADDRESS=http://product-front:8081
+      - ORGANIZATION_ADDRESS=http://organization-front:8082
+      - ACCOUNT_ADDRESS=http://account-front:8083
+      - EMPLOYEE_ADDRESS=http://employee-front:8084
+      - CUSTOMER_ADDRESS=http://customer-front:8085
+      - PROXY_ADDRESS=http://proxy-front:8086
+    ports:
+      - "80:80"
   database:
     image: postgres:latest
     environment:

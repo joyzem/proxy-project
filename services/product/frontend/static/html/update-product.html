@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/materialize.css">
+    <!-- Materialize JavaScript -->
+    <script src="/static/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Обновить товар</title>
+</head>
+
+<body class="has-fixed-sidenav">
+    <header>
+    </header>
+    <main class="white">
+        <div class="container">
+            <div class="section">
+                <h3>Внести изменения в товар</h3>
+                <form class="col s12" action="/product/products/update/" method="post">
+                    <input id="product_id" name="id" type="hidden" value="{{ .Product.Id }}">
+                    <div class="row">
+                        <div class="input-field col s8">
+                            <input id="product_name" name="name" type="text" class="validate"
+                                value="{{ .Product.Name }}">
+                            <label for="product_name">Название товара</label>
+                        </div>
+                        <div class="input-field col s4">
+                            <i class="material-icons prefix">currency_ruble</i>
+                            <input id="product_price" name="price" type="number" value="{{ .Product.Price }}"
+                                class="validate" min="0" step="1">
+                            <label for="product_price">Цена товара</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s4">
+                            <label>Единицы измерения</label>
+                            {{ $productUnitId := .Product.Unit.Id }}
+                            <select name="unit_id" class="browser-default">
+                                {{ range .Units }}
+                                {{ if eq .Id $productUnitId }}
+                                <option value="{{ .Id }}" selected>{{ .Name }}</option>
+                                {{ else }}
+                                <option value="{{ .Id }}">{{ .Name }}</option>
+                                {{ end }}
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <button class="waves-effect waves-blue btn-flat white blue-text" type="submit"><i
+                            class="material-icons left">done</i>Подтвердить</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script type="text/javascript" src="/static/js/nav.js"></script>
+    <script src="/static/js/sidenav.js"></script>
+    <script src="/product/static/js/sidenav-links.js"></script>
+</body>
+
+</html>
