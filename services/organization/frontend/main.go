@@ -15,6 +15,6 @@ func main() {
 	})
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../../../static"))))
-	fmt.Println("Organizations service started...")
+	fmt.Println("Listening on 8082...")
 	http.ListenAndServe(":8082", nil)
 }

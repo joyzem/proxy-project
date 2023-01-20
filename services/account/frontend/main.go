@@ -14,6 +14,6 @@ func main() {
 		http.ServeFile(w, r, "views/accounts.html")
 	})
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../../../static"))))
-	fmt.Println("Accounts service started...")
+	fmt.Println("Listening on 8083...")
 	http.ListenAndServe(":8083", nil)
 }

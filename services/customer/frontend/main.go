@@ -14,6 +14,6 @@ func main() {
 	})
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../../../static"))))
-	fmt.Println("Customers service started...")
+	fmt.Println("Listening on 8085...")
 	http.ListenAndServe(":8085", nil)
 }

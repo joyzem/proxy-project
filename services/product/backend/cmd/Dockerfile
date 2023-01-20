@@ -12,8 +12,6 @@ COPY /services/utils /app/services/utils
 COPY go.mod /app
 COPY go.sum /app
 
-RUN go mod download
-
 RUN go build -o main .
 
 FROM alpine

@@ -10,6 +10,8 @@ services:
     environment:
       - DATABASE_HOST=database
       - DATABASE_USER=user
+    volumes:
+      - ./vendor:/go/pkg/mod
     ports:
       - "8080:8080"
     depends_on:
@@ -24,6 +26,7 @@ services:
       - PRODUCT_BACKEND_ADDRESS=http://product-back:8080
     volumes:
       - ./static:/app/static
+      - ./vendor:/go/pkg/mod
     ports:
       - "8081:8081"
   organization-front:
@@ -34,6 +37,7 @@ services:
       dockerfile: ./services/organization/frontend/Dockerfile
     volumes: 
       - ./static:/app/static
+      - ./vendor:/go/pkg/mod
     ports:
       - "8082:8082"
   account-front:
@@ -44,6 +48,7 @@ services:
       dockerfile: ./services/account/frontend/Dockerfile
     volumes:
       - ./static:/app/static
+      - ./vendor:/go/pkg/mod
     ports:
       - "8083:8083"
   employee-front:
@@ -54,6 +59,7 @@ services:
       dockerfile: ./services/employee/frontend/Dockerfile
     volumes:
       - ./static:/app/static
+      - ./vendor:/go/pkg/mod
     ports:
       - "8084:8084"
   customer-front:
@@ -64,6 +70,7 @@ services:
       dockerfile: ./services/customer/frontend/Dockerfile
     volumes:
       - ./static:/app/static
+      - ./vendor:/go/pkg/mod
     ports:
       - "8085:8085"
   proxy-front:
@@ -74,6 +81,7 @@ services:
       dockerfile: ./services/proxy/frontend/Dockerfile
     volumes: 
       - ./static:/app/static
+      - ./vendor:/go/pkg/mod
     ports:
       - "8086:8086"
   home-front:
@@ -84,6 +92,7 @@ services:
       dockerfile: ./services/home/Dockerfile
     volumes:
       - ./static:/app/static
+      - ./vendor:/go/pkg/mod
     environment:
       - PRODUCT_ADDRESS=http://product-front:8081
       - ORGANIZATION_ADDRESS=http://organization-front:8082

@@ -14,6 +14,6 @@ func main() {
 		http.ServeFile(w, r, "views/proxies.html")
 	})
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../../../static"))))
-	fmt.Println("Proxies service started...")
+	fmt.Println("Listening on 8086...")
 	http.ListenAndServe(":8086", nil)
 }

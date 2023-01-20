@@ -45,7 +45,7 @@ func main() {
 	})
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../../static"))))
-	fmt.Println("Home service started...")
 
+	fmt.Println("Listening on 80...")
 	http.ListenAndServe(":80", nil)
 }

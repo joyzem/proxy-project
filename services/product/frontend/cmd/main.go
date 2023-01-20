@@ -13,7 +13,7 @@ func main() {
 
 	handler := router.GetRouter()
 
-	fmt.Println("Products front listening on 8081...")
+	fmt.Println("Listening on 8081...")
 	if err := http.ListenAndServe(":8081", handler); err != nil {
 		utils.LogError(err)
 		os.Exit(-1)
