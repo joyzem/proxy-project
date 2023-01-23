@@ -35,7 +35,7 @@ func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	body := transport.DeleteProductRequest{Id: id}
-	options := utils.CreateJsonRequestOption(body)
+	options := sharedUtils.CreateJsonRequestOption(body)
 	productsUrl := fmt.Sprintf("%s/products", utils.GetBackendAddress())
 	resp, err := grequests.Delete(productsUrl, options)
 	if err != nil {
@@ -85,7 +85,7 @@ func CreateProductPostHandler(w http.ResponseWriter, r *http.Request) {
 		UnitId: unitId,
 	}
 	productUrl := fmt.Sprintf("%s/products", utils.GetBackendAddress())
-	options := utils.CreateJsonRequestOption(request)
+	options := sharedUtils.CreateJsonRequestOption(request)
 	resp, err := grequests.Post(productUrl, options)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

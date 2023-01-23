@@ -34,7 +34,7 @@ func DeleteUnitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	body := transport.DeleteUnitRequest{Id: id}
-	options := utils.CreateJsonRequestOption(body)
+	options := sharedUtils.CreateJsonRequestOption(body)
 	unitsUrl := fmt.Sprintf("%s/units", utils.GetBackendAddress())
 	resp, err := grequests.Delete(unitsUrl, options)
 	if err != nil {
@@ -63,7 +63,7 @@ func CreateUnitPostHandler(w http.ResponseWriter, r *http.Request) {
 		Unit: unitName,
 	}
 	unitsUrl := fmt.Sprintf("%s/units", utils.GetBackendAddress())
-	options := utils.CreateJsonRequestOption(request)
+	options := sharedUtils.CreateJsonRequestOption(request)
 	resp, err := grequests.Post(unitsUrl, options)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

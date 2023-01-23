@@ -25,46 +25,14 @@
     <div class="container">
       <div class="section">
         <!-- Simply set the `src` attribute to your MD file and win -->
-        <zero-md src="/static/md/about-project.md" class="md"></zero-md>
+        <zero-md src="/home/static/md/about-project.md" class="md"></zero-md>
       </div>
     </div>
   </main>
   <script type="text/javascript" src="/static/js/materialize.min.js"></script>
   <script type="text/javascript" src="/static/js/nav.js"></script>
   <script type="text/javascript" src="/static/js/sidenav.js"></script>
-  <script>
-    var items = [
-      {
-        label: 'О проекте',
-        href: '/',
-      },
-      {
-        label: 'Язык программирования Go',
-        href: '/about-golang/',
-      },
-      {
-        label: 'Микросервисная архитектура',
-        href: '/about-arch/',
-      },
-      {
-        label: 'Веб-разработка',
-        href: '/about-web/',
-      },
-      {
-        label: 'Docker',
-        href: '/about-docker/',
-      },
-      {
-        label: 'СУБД PostgreSQL',
-        href: '/about-postgresql/',
-      },
-      {
-        label: 'Язык запросов SQL',
-        href: '/about-sql/',
-      }
-    ];
-    createSideNav("Wiki", "language", items)
-  </script>
+  <script type="text/javascript" src="/home/static/js/sidenav-home.js"></script>
 </body>
 
 </html>

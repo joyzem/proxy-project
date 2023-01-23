@@ -1,4 +1,3 @@
-
 var sidebarLinks = [
     {
         label: "О сервисе",

@@ -38,7 +38,7 @@ func GetRouter() http.Handler {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodPut},
+		AllowedMethods: []string{http.MethodGet, http.MethodPost},
 	})
 	handler := c.Handler(router)
 	return handler

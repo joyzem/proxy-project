@@ -1,7 +1,7 @@
 FROM golang:alpine as builder
 
 # Set the working directory to the app directory
-WORKDIR /app/services/home
+WORKDIR /app/services/home/cmd
 
 # Copy the source code into the container
 COPY /services/home /app/services/home
@@ -18,7 +18,7 @@ WORKDIR /app
 # Copy the built binary from the builder stage
 COPY --from=builder /app .
 
-WORKDIR /app/services/home
+WORKDIR /app/services/home/cmd
 
 EXPOSE 80
 
