@@ -111,7 +111,6 @@ func UpdateProductGetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, getProductsResponse.Err, http.StatusInternalServerError)
 		return
 	}
-
 	// поиск нужного продукта
 	var requestedProduct *domain.Product
 	for i, product := range getProductsResponse.Products {
@@ -119,20 +118,17 @@ func UpdateProductGetHandler(w http.ResponseWriter, r *http.Request) {
 			requestedProduct = &product
 		}
 	}
-
 	// продукт не найден
 	if requestedProduct == nil {
 		http.Error(w, "the product does not exist", http.StatusBadRequest)
 		return
 	}
-
 	// получение единиц измерения с бэка
 	unitsResp, _ := utils.GetUnitsFromBackend()
 	if unitsResp.Err != "" {
 		http.Error(w, unitsResp.Err, http.StatusInternalServerError)
 		return
 	}
-
 	// структура данных для шаблона
 	type UpdateProductTemplate struct {
 		Product *domain.Product
@@ -142,7 +138,6 @@ func UpdateProductGetHandler(w http.ResponseWriter, r *http.Request) {
 		Product: requestedProduct,
 		Units:   unitsResp.Units,
 	}
-
 	// шаблон страницы
 	updateProductPage, _ := template.ParseFiles("../static/html/update-product.html")
 	updateProductPage.Execute(w, data)
@@ -156,6 +151,7 @@ func UpdateProductPostHandler(w http.ResponseWriter, r *http.Request) {
 	productName := r.FormValue("name")
 	productPrice, priceError := strconv.Atoi(r.FormValue("price"))
 	unitId, unitErr := strconv.Atoi(r.FormValue("unit_id"))
+	// валидация форм
 	if len(productName) == 0 || priceError != nil || unitErr != nil {
 		http.Error(w, base.FIELDS_VALIDATION_ERROR, http.StatusUnprocessableEntity)
 		return
@@ -168,20 +164,16 @@ func UpdateProductPostHandler(w http.ResponseWriter, r *http.Request) {
 			Id: unitId,
 		},
 	}
-
 	// адрес бэка
 	productUrl := fmt.Sprintf("%s/products", utils.GetBackendAddress())
-
 	// тело запроса
 	request := dto.UpdateProductRequest{
 		Product: product,
 	}
-
 	// отправка запроса на обновление и получение ответа
 	resp, _ := grequests.Put(productUrl, &grequests.RequestOptions{
 		JSON: request,
 	})
-
 	// парсинг ответа
 	var updateResponse dto.UpdateProductResponse
 	resp.JSON(&updateResponse)
@@ -189,5 +181,6 @@ func UpdateProductPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, updateResponse.Err, http.StatusInternalServerError)
 		return
 	}
+	// возврат на страницу продуктов
 	http.Redirect(w, r, "/product/products", http.StatusSeeOther)
 }

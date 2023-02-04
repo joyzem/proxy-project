@@ -2,6 +2,11 @@ package dto
 
 import "github.com/joyzem/proxy-project/services/product/domain"
 
+// Описание DTO (data transfer objects)
+// Обычные структуры с тэгом `json:"field"`
+// "omitempty" в конце тэга означает, что поле может отсутствовать
+// Если запрос выполнен успешно, то придет структура без поля "error",
+// иначе — только с полем "error"
 type (
 	CreateUnitRequest struct {
 		Unit string `json:"unit"`

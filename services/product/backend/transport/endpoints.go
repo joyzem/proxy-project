@@ -8,6 +8,7 @@ import (
 	"github.com/joyzem/proxy-project/services/product/dto"
 )
 
+// Структура которая хранит в себе все эндпоинты, используемые в приложении.
 type Endpoints struct {
 	CreateProduct endpoint.Endpoint
 	GetProducts   endpoint.Endpoint
@@ -19,6 +20,10 @@ type Endpoints struct {
 	DeleteUnit    endpoint.Endpoint
 }
 
+// Создает и возвращает набор эндпоинтов, используя сервис `s`.
+// Для создания каждого эндпоинта используется соответствующая
+// функция (например, `makeCreateProductEndpoint` для создания
+// эндпоинта `CreateProduct`)
 func MakeEndpoints(s service.Service) Endpoints {
 	return Endpoints{
 		CreateProduct: makeCreateProductEndpoint(s),
@@ -32,67 +37,96 @@ func MakeEndpoints(s service.Service) Endpoints {
 	}
 }
 
+// Возвращает endpoint, который создает новый продукт с помощью сервиса `s`
 func makeCreateProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		// Приводим запрос к типу `dto.CreateProductRequest`
 		req := request.(dto.CreateProductRequest)
+		// Создаем новый продукт с помощью сервиса
 		product, err := s.CreateProduct(req.Name, req.Price, req.UnitId)
+		// Возвращаем ответ в виде `dto.CreateProductResponse` с полем `Product`
 		return dto.CreateProductResponse{Product: product}, err
 	}
 }
 
+// Возвращает endpoint, который получает список всех продуктов с помощью сервиса `s`
 func makeGetProductsEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		// Получаем список всех продуктов с помощью сервиса
 		products, err := s.GetProducts()
+		// Возвращаем ответ в виде `dto.GetProductsResponse` с полем `Products`
 		return dto.GetProductsResponse{Products: products}, err
 	}
 }
 
+// Возвращает endpoint, который обновляет продукт с помощью сервиса `s`
 func makeUpdateProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		// Приведение к `dto.UpdateProductRequest`
 		req := request.(dto.UpdateProductRequest)
-		service, err := s.UpdateProduct(req.Product)
-		return dto.UpdateProductResponse{Product: service}, err
+		// Обновление информации о товаре
+		product, err := s.UpdateProduct(req.Product)
+		// Возвращаем ответ в виде `dto.UpdateProductResponse` с полем `Product`
+		return dto.UpdateProductResponse{Product: product}, err
 	}
 }
 
+// Возвращает endpoint, который удаляет товар с помощью сервиса `s`
 func makeDeleteProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		// Приводим запрос к типу `dto.DeleteProductRequest`
 		req := request.(dto.DeleteProductRequest)
+		// Удаляем товар с помощью сервиса
 		err := s.DeleteProduct(req.Id)
+		// Возвращаем ответ в виде `dto.DeleteProductResponse`
 		return dto.DeleteProductResponse{}, err
 	}
 }
 
+// Возвращает endpoint, который удаляет единицу измерения с помощью сервиса `s`
 func makeDeleteUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		// Приводим запрос к типу `dto.DeleteUnitRequest`
 		req := request.(dto.DeleteUnitRequest)
+		// Удаляем единицу измерения с помощью сервиса
 		err := s.DeleteUnit(req.Id)
+		// Возвращаем ответ в виде `dto.DeleteUnitResponse`
 		return dto.DeleteUnitResponse{}, err
 	}
 }
 
+// Возвращает endpoint, который обновялет единицу измерения с помощью сервиса `s`
 func makeUpdateUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		// Приведение к типу
 		req := request.(dto.UpdateUnitRequest)
+		// Обновление
 		unit, err := s.UpdateUnit(req.Unit)
+		// Возврат ответа
 		return dto.UpdateUnitResponse{Unit: unit}, err
 	}
 }
 
+// Возвращает endpoint, который получает все единицы измерения.
 func makeGetUnitsEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		// Вызывается функция GetUnits из сервиса и получается список единиц измерения.
 		units, err := s.GetUnits()
+		// Возвращается ответ в формате GetUnitsResponse со списком единиц измерения и возможной ошибкой.
 		return dto.GetUnitsResponse{
 			Units: units,
 		}, err
-
 	}
 }
 
+// Возвращает endpoint, который создает новую единицу измерения.
 func makeCreateUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		// Преобразуется запрос в тип CreateUnitRequest.
 		req := request.(dto.CreateUnitRequest)
+		// Вызывается функция CreateUnit из сервиса, передавая параметр единицы измерения.
 		unit, err := s.CreateUnit(req.Unit)
+		// Возвращается ответ в форме `dto.CreateUnitResponse`
 		return dto.CreateUnitResponse{Unit: unit}, err
 	}
 }

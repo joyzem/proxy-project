@@ -10,9 +10,9 @@ import (
 )
 
 func main() {
-
+	// получение маршрутизатора
 	handler := router.GetRouter()
-
+	// запуск сервера
 	fmt.Println("Listening on 8081...")
 	if err := http.ListenAndServe(":8081", handler); err != nil {
 		base.LogError(err)

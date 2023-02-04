@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -27,19 +26,22 @@ func main() {
 
 	// Создать таблицы, если не существуют
 	if err := implementation.InitDatabase(*db); err != nil {
-		base.LogError(errors.New(err.Error() + ": failed init"))
+		base.LogError(err)
 	}
 
 	defer db.Close()
 
-	// Создание сервиса
+	// Репозиторий товаров
 	productRepo := implementation.NewProductRepo(db)
+	// Репозиторий единиц измерения
 	unitRepo := implementation.NewUnitRepository(db)
+	// Создание сервиса
 	svc := implementation.NewService(productRepo, unitRepo)
 
 	// Создание эндпоинтов
 	endpoints := transport.MakeEndpoints(svc)
 
+	// Создание маршрутизатора
 	h := httptransport.NewService(endpoints, []kithttp.ServerOption{})
 
 	fmt.Println("Listening on 7071...")

@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"reflect"
-
-	"github.com/levigross/grequests"
 )
 
 // Функция десериализирует тело запроса и возвращает ошибку, если тело
@@ -61,16 +59,8 @@ func EncodeErrorResponse(_ context.Context, err error, w http.ResponseWriter) {
 	})
 }
 
-func EncodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+// Закодировать ответ
+func EncodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	return json.NewEncoder(w).Encode(response)
-}
-
-func CreateJsonRequestOption(body interface{}) *grequests.RequestOptions {
-	return &grequests.RequestOptions{
-		JSON: body,
-		Headers: map[string]string{
-			"Content-Type": "application/json",
-		},
-	}
 }

@@ -40,9 +40,10 @@ func DeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	body := dto.DeleteAccountRequest{Id: id}
-	options := base.CreateJsonRequestOption(body)
 	accountsUrl := fmt.Sprintf("%s/accounts", utils.GetBackendAddress())
-	resp, err := grequests.Delete(accountsUrl, options)
+	resp, err := grequests.Delete(accountsUrl, &grequests.RequestOptions{
+		JSON: body,
+	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -72,8 +73,9 @@ func CreateAccountPostHandler(w http.ResponseWriter, r *http.Request) {
 		BankIdentityNumber: bankIdentityNumber,
 	}
 	accountsUrl := fmt.Sprintf("%s/accounts", utils.GetBackendAddress())
-	options := base.CreateJsonRequestOption(request)
-	resp, err := grequests.Post(accountsUrl, options)
+	resp, err := grequests.Post(accountsUrl, &grequests.RequestOptions{
+		JSON: request,
+	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

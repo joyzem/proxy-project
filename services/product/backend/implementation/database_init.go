@@ -4,7 +4,9 @@ import (
 	"database/sql"
 )
 
+// Функция инициализации таблиц
 func InitDatabase(db sql.DB) error {
+	// запрос на создание таблицы units
 	createUnitsTableSql := `
 		CREATE TABLE IF NOT EXISTS units (
 			id serial PRIMARY KEY,
@@ -15,6 +17,7 @@ func InitDatabase(db sql.DB) error {
 	if err != nil {
 		return err
 	}
+	// добавление значения по умолчанию
 	insertDefaultValue := `
 		INSERT INTO units (id, name)
 		VALUES (0, 'Не указано')
@@ -24,6 +27,7 @@ func InitDatabase(db sql.DB) error {
 	if err != nil {
 		return err
 	}
+	// запрос на создание таблицы products
 	createProductsTableSql := `
 		CREATE TABLE IF NOT EXISTS products (
 			id SERIAL PRIMARY KEY,

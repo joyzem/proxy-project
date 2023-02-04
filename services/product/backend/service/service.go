@@ -4,22 +4,22 @@ import (
 	"github.com/joyzem/proxy-project/services/product/domain"
 )
 
-// Весь сервис товаров для внешнего источника представлен этим интерфейсом
+// Service определяет интерфейс, который предоставляет методы для управления товарами и единицами измерения.
+// - CreateProduct создает новый товар с именем "name", ценой "price" и единицей измерения с id "unitId".
+// - GetProducts возвращает список всех товаров.
+// - UpdateProduct обновляет информацию о товаре.
+// - DeleteProduct удаляет товар из базы данных по id.
+// - CreateUnit создает новую единицу измерения с именем "name".
+// - GetUnits возвращает список всех единиц измерения.
+// - UpdateUnit обновляет информацию о единице измерения.
+// - DeleteUnit удаляет единицу измерения из базы данных по id.
 type Service interface {
-	// Создать товар
 	CreateProduct(name string, price int, unitId int) (*domain.Product, error)
-	// Получить все товары
 	GetProducts() ([]domain.Product, error)
-	// Обновить информацию о товаре
 	UpdateProduct(domain.Product) (*domain.Product, error)
-	// Удалить товар
 	DeleteProduct(int) error
-	// Создать единицы измерения
 	CreateUnit(string) (*domain.Unit, error)
-	// Получить все единицы измерения
 	GetUnits() ([]domain.Unit, error)
-	// Обновить единицу измерения
 	UpdateUnit(domain.Unit) (*domain.Unit, error)
-	// Удалить единицу измерения
 	DeleteUnit(int) error
 }

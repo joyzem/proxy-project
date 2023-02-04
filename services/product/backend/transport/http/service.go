@@ -11,15 +11,26 @@ import (
 	"github.com/joyzem/proxy-project/services/product/dto"
 )
 
+// NewService создает новый HTTP-сервис, используя указанные входные точки transport.Endpoints и опции kithttp.ServerOption
 func NewService(
 	svcEndpoints transport.Endpoints,
 	options []kithttp.ServerOption,
 ) http.Handler {
 
+	// Создается новый роутер mux
 	router := mux.NewRouter()
+
+	// Устанавливается кодировщик ошибок errorEncoder, который будет использоваться для кодирования ответов об ошибках
 	errorEncoder := kithttp.ServerErrorEncoder(base.EncodeErrorResponse)
 
+	// Добавляется кодировщик ошибок в список опций
 	options = append(options, errorEncoder)
+
+	// Для следующих методов и путей создаются обработчики kithttp.NewServer, которые реализуют интерфейс http.Handler
+	// Каждому методу (POST, GET, DELETE, PUT) и пути (/products, /units) создается обработчик функцией kithttp.NewServer,
+	// которая принимает эндпоинт, функцию, декодирующую запрос, функцию, кодирующую ответ и опции
+	// Одной из опций является кодирование ошибок. Если в процессе работы сервиса произойдет ошибка, то обработчик вернет
+	// JSON ответ в виде {"error": "описание ошибки"}
 
 	router.Methods("POST").Path("/products").Handler(
 		kithttp.NewServer(
@@ -87,12 +98,17 @@ func NewService(
 	return router
 }
 
+// Следующие функции декодируют запрос и возвращают требуемую структуру данных для дальнейшей работы в эндпоинте
+// Приходит http.Request r, и он декодируется с помощью функции base.DecodeBody(r, &req), которая
+// возвращает требуемую структуру или ошибку, если она произошла
+
 func decodeCreateProductRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
 	var req dto.CreateProductRequest
 	return base.DecodeBody(r, &req)
 }
 
 func decodeGetProductsRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	// У этого запроса нет тела, и декодировать нечего
 	return dto.GetProductsRequest{}, nil
 }
 
