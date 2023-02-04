@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/joyzem/proxy-project/services/product/backend/service"
+	"github.com/joyzem/proxy-project/services/product/dto"
 )
 
 type Endpoints struct {
@@ -33,70 +34,65 @@ func MakeEndpoints(s service.Service) Endpoints {
 
 func makeCreateProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(CreateProductRequest)
-		service, err := s.CreateProduct(ctx, req.Name, req.Price, req.UnitId)
-		return CreateProductResponse{Product: service, Err: err}, err
+		req := request.(dto.CreateProductRequest)
+		product, err := s.CreateProduct(req.Name, req.Price, req.UnitId)
+		return dto.CreateProductResponse{Product: product}, err
 	}
 }
 
 func makeGetProductsEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		products, err := s.GetProducts(ctx)
-		return GetProductsResponse{
-			Products: products,
-			Err:      err,
-		}, err
-
+		products, err := s.GetProducts()
+		return dto.GetProductsResponse{Products: products}, err
 	}
 }
 
 func makeUpdateProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(UpdateProductRequest)
-		service, err := s.UpdateProduct(ctx, req.Product)
-		return UpdateProductResponse{Product: service, Err: err}, err
+		req := request.(dto.UpdateProductRequest)
+		service, err := s.UpdateProduct(req.Product)
+		return dto.UpdateProductResponse{Product: service}, err
 	}
 }
 
 func makeDeleteProductEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(DeleteProductRequest)
-		err := s.DeleteProduct(ctx, req.Id)
-		return DeleteProductResponse{Err: err}, err
+		req := request.(dto.DeleteProductRequest)
+		err := s.DeleteProduct(req.Id)
+		return dto.DeleteProductResponse{}, err
 	}
 }
 
 func makeDeleteUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(DeleteUnitRequest)
-		err := s.DeleteUnit(ctx, req.Id)
-		return DeleteUnitResponse{Err: err}, err
+		req := request.(dto.DeleteUnitRequest)
+		err := s.DeleteUnit(req.Id)
+		return dto.DeleteUnitResponse{}, err
 	}
 }
 
 func makeUpdateUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(UpdateUnitRequest)
-		unit, err := s.UpdateUnit(ctx, req.Unit)
-		return UpdateUnitResponse{Unit: unit, Err: err}, err
+		req := request.(dto.UpdateUnitRequest)
+		unit, err := s.UpdateUnit(req.Unit)
+		return dto.UpdateUnitResponse{Unit: unit}, err
 	}
 }
 
 func makeGetUnitsEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		units, err := s.GetUnits(ctx)
-		return GetUnitsResponse{
+		units, err := s.GetUnits()
+		return dto.GetUnitsResponse{
 			Units: units,
-			Err:   err,
-		}, nil
+		}, err
 
 	}
 }
 
 func makeCreateUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(CreateUnitRequest)
-		unit, err := s.CreateUnit(ctx, req.Unit)
-		return CreateUnitResponse{Unit: unit, Err: err}, err
+		req := request.(dto.CreateUnitRequest)
+		unit, err := s.CreateUnit(req.Unit)
+		return dto.CreateUnitResponse{Unit: unit}, err
 	}
 }

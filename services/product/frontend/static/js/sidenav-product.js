@@ -1,15 +1,15 @@
 var sidebarLinks = [
     {
         label: "О сервисе",
-        href: "/product/",
+        href: "/product",
     },
     {
         label: "Товары",
-        href: "/product/products/"
+        href: "/product/products"
     },
     {
         label: "Ед. измерения",
-        href: "/product/units/"
+        href: "/product/units"
     }
 ]
 createSideNav("Товары", "shopping_cart", sidebarLinks)

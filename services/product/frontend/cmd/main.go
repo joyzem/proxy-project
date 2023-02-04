@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joyzem/proxy-project/services/base"
 	"github.com/joyzem/proxy-project/services/product/frontend/router"
-	"github.com/joyzem/proxy-project/services/utils"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 
 	fmt.Println("Listening on 8081...")
 	if err := http.ListenAndServe(":8081", handler); err != nil {
-		utils.LogError(err)
+		base.LogError(err)
 		os.Exit(-1)
 	}
 }

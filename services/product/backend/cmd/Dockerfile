@@ -8,9 +8,10 @@ WORKDIR /app/services/product/backend/cmd
 # Copy the source code into the container
 COPY /services/product/backend /app/services/product/backend
 COPY /services/product/domain /app/services/product/domain
-COPY /services/utils /app/services/utils
-COPY go.mod /app
-COPY go.sum /app
+COPY /services/product/dto /app/services/product/dto
+COPY /services/base /app/services/base
+COPY /go.mod /app
+COPY /go.sum /app
 
 RUN go build -o main .
 
@@ -22,6 +23,6 @@ WORKDIR /app/services/product/backend/cmd
 # Copy the built binary from the builder stage
 COPY --from=builder /app/services/product/backend/cmd/main .
 
-EXPOSE 8080
+EXPOSE 7071
 
 CMD ["./main"]

@@ -5,8 +5,9 @@ WORKDIR /app/services/organization/frontend
 
 # Copy the source code into the container
 COPY /services/organization/frontend /app/services/organization/frontend
-COPY go.mod /app
-COPY go.sum /app
+COPY /services/base /app/services/base
+COPY /go.mod /app
+COPY /go.sum /app
 
 RUN go build -o main .
 

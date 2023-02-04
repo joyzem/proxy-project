@@ -6,10 +6,10 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/employee/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/employee", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "views/index.html")
 	})
-	http.HandleFunc("/employee/employees/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/employee/employees", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "views/employees.html")
 	})
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../../../static"))))

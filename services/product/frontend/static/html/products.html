@@ -17,7 +17,7 @@
     <div class="container">
       <div class="section">
         <h3>Товары</h3>
-        <a class="waves-effect waves-blue btn-flat white blue-text" href="/product/products/create/"><i
+        <a class="waves-effect waves-blue btn-flat white blue-text" href="/product/products/create"><i
             class="material-icons left">add</i>Добавить</a>
         <table class="highlight">
           <thead>
@@ -33,7 +33,7 @@
             <td>{{.Unit.Name}}</td>
             <td>
               <div class="valign-wrapper right">
-                <form action="/product/products/delete/" method="post" class="col">
+                <form action="/product/products/delete" method="post" class="col">
                   <input name="id" type="hidden" value="{{ .Id }}">
                   <button type="submit" class="btn-floating z-depth-0 waves-effect waves-light margin-right">
                     <i class="material-icons red">delete</i>

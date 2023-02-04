@@ -13,7 +13,7 @@ services:
     volumes:
       - ./vendor:/go/pkg/mod
     ports:
-      - "8080:8080"
+      - "7071:7071"
     depends_on:
       - database
   product-front:
@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: ./services/product/frontend/cmd/Dockerfile
     environment:
-      - PRODUCT_BACKEND_ADDRESS=http://product-back:8080
+      - PRODUCT_BACKEND_ADDRESS=http://product-back:7071
     volumes:
       - ./static:/app/static
       - ./vendor:/go/pkg/mod
@@ -40,12 +40,29 @@ services:
       - ./vendor:/go/pkg/mod
     ports:
       - "8082:8082"
+  account-back:
+    image: joyzem/project:account-back
+    container_name: account-back
+    build: 
+      context: .
+      dockerfile: ./services/account/backend/cmd/Dockerfile
+    environment:
+      - DATABASE_HOST=database
+      - DATABASE_USER=user
+    volumes:
+      - ./vendor:/go/pkg/mod
+    ports:
+      - "7073:7073"
+    depends_on:
+      - database
   account-front:
     image: joyzem/project:account-front
     container_name: account-front
     build:
       context: .
-      dockerfile: ./services/account/frontend/Dockerfile
+      dockerfile: ./services/account/frontend/cmd/Dockerfile
+    environment:
+      - ACCOUNT_BACKEND_ADDRESS=http://account-back:7073
     volumes:
       - ./static:/app/static
       - ./vendor:/go/pkg/mod
@@ -89,7 +106,7 @@ services:
     container_name: home-front
     build:
       context: .
-      dockerfile: ./services/home/Dockerfile
+      dockerfile: ./services/home/cmd/Dockerfile
     volumes:
       - ./static:/app/static
       - ./vendor:/go/pkg/mod

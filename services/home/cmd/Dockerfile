@@ -5,7 +5,7 @@ WORKDIR /app/services/home/cmd
 
 # Copy the source code into the container
 COPY /services/home /app/services/home
-COPY /services/utils /app/services/utils
+COPY /services/base /app/services/base
 COPY go.mod /app
 COPY go.sum /app
 

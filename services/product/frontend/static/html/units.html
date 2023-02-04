@@ -18,7 +18,7 @@
     <div class="container">
       <div class="section">
         <h3>Единицы измерения</h3>
-        <a href="/product/units/create/" class="waves-effect waves-blue btn-flat white blue-text"><i class="material-icons left">add</i>Добавить</a>
+        <a href="/product/units/create" class="waves-effect waves-blue btn-flat white blue-text"><i class="material-icons left">add</i>Добавить</a>
         <table class="highlight">
           <thead>
             <th>Единица измерения</th>
@@ -29,7 +29,7 @@
             <td>{{ .Name }}</td>
             <td>
               <div class="valign-wrapper right">
-                <form action="/product/units/delete/" method="post" class="col">
+                <form action="/product/units/delete" method="post" class="col">
                   <input name="id" type="hidden" value="{{ .Id }}">
                   <button type="submit" class="btn-floating z-depth-0 waves-effect waves-light margin-right">
                     <i class="material-icons red">delete</i>

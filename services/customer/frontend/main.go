@@ -6,10 +6,10 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/customer/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/customer", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "views/index.html")
 	})
-	http.HandleFunc("/customer/customers/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/customer/customers", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "views/customers.html")
 	})
 

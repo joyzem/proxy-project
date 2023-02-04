@@ -17,13 +17,13 @@
         <div class="container">
             <div class="section">
                 <h3>Внести изменения в товар</h3>
-                <form class="col s12" action="/product/products/update/" method="post">
+                <form class="col s12" action="/product/products/update" method="post">
                     <input id="product_id" name="id" type="hidden" value="{{ .Product.Id }}">
                     <div class="row">
                         <div class="input-field col s8">
                             <input id="product_name" name="name" type="text" class="validate"
                                 value="{{ .Product.Name }}">
-                            <label for="product_name">Название товара</label>
+                            <label for="product_name">Наименование товара</label>
                         </div>
                         <div class="input-field col s4">
                             <i class="material-icons prefix">currency_ruble</i>

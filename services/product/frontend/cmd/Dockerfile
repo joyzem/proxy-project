@@ -6,9 +6,10 @@ WORKDIR /app/services/product/frontend/cmd
 # Copy the source code into the container
 COPY /services/product/frontend /app/services/product/frontend
 COPY /services/product/domain /app/services/product/domain
-COPY /services/utils /app/services/utils
-COPY go.mod /app
-COPY go.sum /app
+COPY /services/product/dto /app/services/product/dto
+COPY /services/base /app/services/base
+COPY /go.mod /app
+COPY /go.sum /app
 
 RUN go build -o main .
 

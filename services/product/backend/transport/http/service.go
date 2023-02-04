@@ -2,27 +2,22 @@ package http
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	"github.com/joyzem/proxy-project/services/base"
 	"github.com/joyzem/proxy-project/services/product/backend/transport"
-	"github.com/joyzem/proxy-project/services/utils"
-)
-
-var (
-	ErrBadRouting = errors.New("bad Routing")
+	"github.com/joyzem/proxy-project/services/product/dto"
 )
 
 func NewService(
 	svcEndpoints transport.Endpoints,
 	options []kithttp.ServerOption,
 ) http.Handler {
-	var (
-		router       = mux.NewRouter()
-		errorEncoder = kithttp.ServerErrorEncoder(utils.EncodeErrorResponse)
-	)
+
+	router := mux.NewRouter()
+	errorEncoder := kithttp.ServerErrorEncoder(base.EncodeErrorResponse)
 
 	options = append(options, errorEncoder)
 
@@ -30,7 +25,7 @@ func NewService(
 		kithttp.NewServer(
 			svcEndpoints.CreateProduct,
 			decodeCreateProductRequest,
-			utils.EncodeResponse,
+			base.EncodeResponse,
 			options...,
 		))
 
@@ -38,7 +33,7 @@ func NewService(
 		kithttp.NewServer(
 			svcEndpoints.GetProducts,
 			decodeGetProductsRequest,
-			utils.EncodeResponse,
+			base.EncodeResponse,
 			options...,
 		))
 
@@ -46,7 +41,7 @@ func NewService(
 		kithttp.NewServer(
 			svcEndpoints.UpdateProduct,
 			decodeUpdateProductRequest,
-			utils.EncodeResponse,
+			base.EncodeResponse,
 			options...,
 		))
 
@@ -54,7 +49,7 @@ func NewService(
 		kithttp.NewServer(
 			svcEndpoints.DeleteProduct,
 			decodeDeleteProductRequest,
-			utils.EncodeResponse,
+			base.EncodeResponse,
 			options...,
 		))
 
@@ -62,7 +57,7 @@ func NewService(
 		kithttp.NewServer(
 			svcEndpoints.CreateUnit,
 			decodeCreateUnitRequest,
-			utils.EncodeResponse,
+			base.EncodeResponse,
 			options...,
 		))
 
@@ -70,7 +65,7 @@ func NewService(
 		kithttp.NewServer(
 			svcEndpoints.GetUnits,
 			decodeGetUnitsRequest,
-			utils.EncodeResponse,
+			base.EncodeResponse,
 			options...,
 		))
 
@@ -78,7 +73,7 @@ func NewService(
 		kithttp.NewServer(
 			svcEndpoints.UpdateUnit,
 			decodeUpdateUnitRequest,
-			utils.EncodeResponse,
+			base.EncodeResponse,
 			options...,
 		))
 
@@ -86,72 +81,47 @@ func NewService(
 		kithttp.NewServer(
 			svcEndpoints.DeleteUnit,
 			decodeDeleteUnitRequest,
-			utils.EncodeResponse,
+			base.EncodeResponse,
 			options...,
 		))
 	return router
 }
 
 func decodeCreateProductRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req transport.CreateProductRequest
-	if err := utils.DecodeBody(r, &req); err != nil {
-		utils.LogError(err)
-		return nil, err
-	}
-	return req, nil
+	var req dto.CreateProductRequest
+	return base.DecodeBody(r, &req)
 }
 
 func decodeGetProductsRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req transport.GetProductsRequest
-	return req, nil
+	return dto.GetProductsRequest{}, nil
 }
 
 func decodeUpdateProductRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req transport.UpdateProductRequest
-	if err := utils.DecodeBody(r, &req); err != nil {
-		utils.LogError(err)
-		return nil, err
-	}
-	return req, nil
+	var req dto.UpdateProductRequest
+	return base.DecodeBody(r, &req)
 }
 
 func decodeDeleteProductRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req transport.DeleteProductRequest
-	if err := utils.DecodeBody(r, &req); err != nil {
-		utils.LogError(err)
-		return nil, err
-	}
-	return req, nil
+	var req dto.DeleteProductRequest
+	return base.DecodeBody(r, &req)
 }
 
 func decodeCreateUnitRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req transport.CreateUnitRequest
-	if err := utils.DecodeBody(r, &req); err != nil {
-		utils.LogError(err)
-		return nil, err
-	}
-	return req, nil
+	var req dto.CreateUnitRequest
+	return base.DecodeBody(r, &req)
 }
 
 func decodeGetUnitsRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req transport.GetUnitsRequest
+	var req dto.GetUnitsRequest
 	return req, nil
 }
 
-func decodeUpdateUnitRequest(_ context.Context, r *http.Request) (reques interface{}, err error) {
-	var req transport.UpdateUnitRequest
-	if err := utils.DecodeBody(r, &req); err != nil {
-		utils.LogError(err)
-		return nil, err
-	}
-	return req, nil
+func decodeUpdateUnitRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	var req dto.UpdateUnitRequest
+	return base.DecodeBody(r, &req)
 }
 
 func decodeDeleteUnitRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req transport.DeleteUnitRequest
-	if err := utils.DecodeBody(r, &req); err != nil {
-		utils.LogError(err)
-		return nil, err
-	}
-	return req, nil
+	var req dto.DeleteUnitRequest
+	return base.DecodeBody(r, &req)
 }

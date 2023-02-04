@@ -1,183 +1,193 @@
 package handlers
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
 	"sort"
 	"strconv"
 
-	sharedUtils "github.com/joyzem/proxy-project/services/utils"
-
 	"github.com/gorilla/mux"
+	"github.com/joyzem/proxy-project/services/base"
 	"github.com/joyzem/proxy-project/services/product/domain"
-	"github.com/joyzem/proxy-project/services/product/frontend/transport"
+	"github.com/joyzem/proxy-project/services/product/dto"
 	"github.com/joyzem/proxy-project/services/product/frontend/utils"
 	"github.com/levigross/grequests"
 )
 
+// Обработчик страницы всех товаров
 func ProductsHandler(w http.ResponseWriter, r *http.Request) {
-	products, err := utils.GetProductsFromBackend()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// получить товары с бэка
+	response, _ := utils.GetProductsFromBackend()
+	if response.Err != "" {
+		http.Error(w, response.Err, http.StatusInternalServerError)
 		return
 	}
+	// создать шаблон
 	productPage, _ := template.ParseFiles("../static/html/products.html")
-	productPage.Execute(w, products)
+	productPage.Execute(w, response.Products)
 }
 
+// Обработчик удаления товара
 func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.FormValue("id"))
-	if err != nil {
-		http.Redirect(w, r, "/product/products/", http.StatusBadRequest)
-		return
-	}
-	body := transport.DeleteProductRequest{Id: id}
-	options := sharedUtils.CreateJsonRequestOption(body)
+	// прочитать id
+	id, _ := strconv.Atoi(r.FormValue("id"))
+	// адрес бэка
 	productsUrl := fmt.Sprintf("%s/products", utils.GetBackendAddress())
-	resp, err := grequests.Delete(productsUrl, options)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	var deleteResponse transport.DeleteProductResponse
-	err = json.Unmarshal(resp.Bytes(), &deleteResponse)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	http.Redirect(w, r, "/product/products/", http.StatusSeeOther)
-}
-
-func CreateProductGetHandler(w http.ResponseWriter, r *http.Request) {
-	units, err := utils.GetUnitsFromBackend()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	sort.Slice(units, func(i, j int) bool {
-		return units[i].Id < units[j].Id
+	// отправить запрос на удаление и получить ответ
+	resp, _ := grequests.Delete(productsUrl, &grequests.RequestOptions{
+		JSON: dto.DeleteProductRequest{Id: id},
 	})
-	createProductPage, err := template.ParseFiles("../static/html/create-product.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// распарсить ответ
+	var deleteResponse dto.DeleteProductResponse
+	resp.JSON(&deleteResponse)
+	if deleteResponse.Err != "" {
+		http.Error(w, deleteResponse.Err, http.StatusInternalServerError)
 		return
 	}
-	err = createProductPage.Execute(w, units)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	// редирект на все товары
+	http.Redirect(w, r, "/product/products", http.StatusSeeOther)
 }
 
-func CreateProductPostHandler(w http.ResponseWriter, r *http.Request) {
-	productName := r.FormValue("name")
-	productPrice, priceError := strconv.Atoi(r.FormValue("price"))
-	unitId, unitErr := strconv.Atoi(r.FormValue("unit_id"))
-	if len(productName) == 0 || priceError != nil || unitErr != nil {
-		http.Error(w, errors.New(sharedUtils.FIELDS_VALIDATION_ERROR).Error(), http.StatusUnprocessableEntity)
+// Обработчик страницы добавления товара
+func CreateProductGetHandler(w http.ResponseWriter, r *http.Request) {
+	// получить единицы измерения
+	units, _ := utils.GetUnitsFromBackend()
+	if units.Err != "" {
+		http.Error(w, units.Err, http.StatusInternalServerError)
 		return
 	}
-	request := transport.CreateProductRequest{
+	// отсортировать по id
+	sort.Slice(units.Units, func(i, j int) bool {
+		return units.Units[i].Id < units.Units[j].Id
+	})
+	// шаблон добавления товара
+	createProductPage, _ := template.ParseFiles("../static/html/create-product.html")
+	createProductPage.Execute(w, units.Units)
+}
+
+// Обработчик запроса на добавление товара
+func CreateProductPostHandler(w http.ResponseWriter, r *http.Request) {
+	// наименование товара
+	productName := r.FormValue("name")
+	// цена товара
+	productPrice, priceError := strconv.Atoi(r.FormValue("price"))
+	// id ед.изм.
+	unitId, unitErr := strconv.Atoi(r.FormValue("unit_id"))
+	// валидация форм
+	if productName == "" || priceError != nil || unitErr != nil {
+		http.Error(w, base.FIELDS_VALIDATION_ERROR, http.StatusUnprocessableEntity)
+		return
+	}
+	// создание структуры запроса
+	request := dto.CreateProductRequest{
 		Name:   productName,
 		Price:  productPrice,
 		UnitId: unitId,
 	}
+	// адрес бэка
 	productUrl := fmt.Sprintf("%s/products", utils.GetBackendAddress())
-	options := sharedUtils.CreateJsonRequestOption(request)
-	resp, err := grequests.Post(productUrl, options)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	var data transport.CreateProductResponse
-	err = json.Unmarshal(resp.Bytes(), &data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if data.Err == nil {
-		http.Redirect(w, r, "/product/products/", http.StatusSeeOther)
+	// отправить запрос на добавление товара и получение ответа
+	resp, _ := grequests.Post(productUrl, &grequests.RequestOptions{
+		JSON: request,
+	})
+	// парсинг ответа
+	var data dto.CreateProductResponse
+	resp.JSON(&data)
+	if data.Err != "" {
+		http.Error(w, data.Err, http.StatusInternalServerError)
 	} else {
-		http.Error(w, data.Err.Error(), http.StatusInternalServerError)
+		http.Redirect(w, r, "/product/products", http.StatusSeeOther)
 	}
 }
 
+// Обработчик страницы обновления продукта
 func UpdateProductGetHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(mux.Vars(r)["id"])
-	if err != nil {
-		http.Redirect(w, r, "/product/products/", http.StatusBadRequest)
+	// парсинг id
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	// получение продуктов с бэка
+	getProductsResponse, _ := utils.GetProductsFromBackend()
+	if getProductsResponse.Err != "" {
+		http.Error(w, getProductsResponse.Err, http.StatusInternalServerError)
 		return
 	}
-	products, err := utils.GetProductsFromBackend()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	units, err := utils.GetUnitsFromBackend()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
+	// поиск нужного продукта
 	var requestedProduct *domain.Product
-	for i, product := range products {
-		if products[i].Id == id {
+	for i, product := range getProductsResponse.Products {
+		if getProductsResponse.Products[i].Id == id {
 			requestedProduct = &product
 		}
 	}
+
+	// продукт не найден
 	if requestedProduct == nil {
 		http.Error(w, "the product does not exist", http.StatusBadRequest)
 		return
 	}
-	updateProductPage, err := template.ParseFiles("../static/html/update-product.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+	// получение единиц измерения с бэка
+	unitsResp, _ := utils.GetUnitsFromBackend()
+	if unitsResp.Err != "" {
+		http.Error(w, unitsResp.Err, http.StatusInternalServerError)
 		return
 	}
-	data := transport.UpdateProductTemplate{
-		Product: requestedProduct,
-		Units:   units,
+
+	// структура данных для шаблона
+	type UpdateProductTemplate struct {
+		Product *domain.Product
+		Units   []domain.Unit
 	}
+	data := UpdateProductTemplate{
+		Product: requestedProduct,
+		Units:   unitsResp.Units,
+	}
+
+	// шаблон страницы
+	updateProductPage, _ := template.ParseFiles("../static/html/update-product.html")
 	updateProductPage.Execute(w, data)
 
 }
 
+// Обработчик запроса на обновление товара
 func UpdateProductPostHandler(w http.ResponseWriter, r *http.Request) {
-	product, err := getProductFromTheForm(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
-	}
-	productUrl := fmt.Sprintf("%s/products", utils.GetBackendAddress())
-	request := transport.UpdateProductRequest{
-		Product: product,
-	}
-	options := &grequests.RequestOptions{
-		JSON: request,
-	}
-	_, err = grequests.Put(productUrl, options)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	http.Redirect(w, r, "/product/products/", http.StatusSeeOther)
-}
-
-func getProductFromTheForm(r *http.Request) (*domain.Product, error) {
+	// парсинг товара
 	productId, _ := strconv.Atoi(r.FormValue("id"))
 	productName := r.FormValue("name")
 	productPrice, priceError := strconv.Atoi(r.FormValue("price"))
 	unitId, unitErr := strconv.Atoi(r.FormValue("unit_id"))
 	if len(productName) == 0 || priceError != nil || unitErr != nil {
-		return nil, errors.New(sharedUtils.FIELDS_VALIDATION_ERROR)
+		http.Error(w, base.FIELDS_VALIDATION_ERROR, http.StatusUnprocessableEntity)
+		return
 	}
-	return &domain.Product{
+	product := domain.Product{
 		Id:    productId,
 		Name:  productName,
 		Price: productPrice,
 		Unit: domain.Unit{
 			Id: unitId,
 		},
-	}, nil
+	}
+
+	// адрес бэка
+	productUrl := fmt.Sprintf("%s/products", utils.GetBackendAddress())
+
+	// тело запроса
+	request := dto.UpdateProductRequest{
+		Product: product,
+	}
+
+	// отправка запроса на обновление и получение ответа
+	resp, _ := grequests.Put(productUrl, &grequests.RequestOptions{
+		JSON: request,
+	})
+
+	// парсинг ответа
+	var updateResponse dto.UpdateProductResponse
+	resp.JSON(&updateResponse)
+	if updateResponse.Err != "" {
+		http.Error(w, updateResponse.Err, http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/product/products", http.StatusSeeOther)
 }

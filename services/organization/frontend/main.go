@@ -7,10 +7,10 @@ import (
 
 func main() {
 
-	http.HandleFunc("/organization/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/organization", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "views/index.html")
 	})
-	http.HandleFunc("/organization/organizations/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/organization/organizations", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "views/organizations.html")
 	})
 

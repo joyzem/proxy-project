@@ -16,27 +16,27 @@ const navLinks = [
     },
     {
         label: 'Доверенности',
-        href: '/proxy/',
+        href: '/proxy',
     },
     {
         label: 'Товары',
-        href: '/product/',
+        href: '/product',
     },
     {
         label: 'Сотрудники',
-        href: '/employee/',
+        href: '/employee',
     },
     {
         label: 'Контрагенты',
-        href: '/customer/',
+        href: '/customer',
     },
     {
         label: 'Организации',
-        href: '/organization/',
+        href: '/organization',
     },
     {
         label: 'Счета',
-        href: '/account/',
+        href: '/account',
     },
 ];
 

@@ -5,6 +5,7 @@ WORKDIR /app/services/customer/frontend
 
 # Copy the source code into the container
 COPY /services/customer/frontend /app/services/customer/frontend
+COPY /services/base /app/services/base
 COPY go.mod /app
 COPY go.sum /app
 

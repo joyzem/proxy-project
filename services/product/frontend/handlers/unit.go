@@ -1,139 +1,144 @@
 package handlers
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
-	sharedUtils "github.com/joyzem/proxy-project/services/utils"
 
+	"github.com/joyzem/proxy-project/services/base"
 	"github.com/joyzem/proxy-project/services/product/domain"
-	"github.com/joyzem/proxy-project/services/product/frontend/transport"
+	"github.com/joyzem/proxy-project/services/product/dto"
 	"github.com/joyzem/proxy-project/services/product/frontend/utils"
 	"github.com/levigross/grequests"
 )
 
+// Обработчик страницы единиц измерения
 func UnitsHandler(w http.ResponseWriter, r *http.Request) {
-	units, err := utils.GetUnitsFromBackend()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// получение ед. измерения
+	units, _ := utils.GetUnitsFromBackend()
+	if units.Err != "" {
+		http.Error(w, units.Err, http.StatusInternalServerError)
 		return
 	}
+	// создание шаблона
 	unitsPage, _ := template.ParseFiles("../static/html/units.html")
-	unitsPage.Execute(w, units)
+	unitsPage.Execute(w, units.Units)
 }
 
+// Обработчик удаления единицы измерения
 func DeleteUnitHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.FormValue("id"))
-	if err != nil {
-		http.Redirect(w, r, "/product/units/", http.StatusBadRequest)
-		return
-	}
-	body := transport.DeleteUnitRequest{Id: id}
-	options := sharedUtils.CreateJsonRequestOption(body)
+	// парсинг id
+	id, _ := strconv.Atoi(r.FormValue("id"))
+	// тело запроса
+	body := dto.DeleteUnitRequest{Id: id}
+	// адрес ед.измерения
 	unitsUrl := fmt.Sprintf("%s/units", utils.GetBackendAddress())
-	resp, err := grequests.Delete(unitsUrl, options)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// отправка запроса и получение ответа
+	resp, _ := grequests.Delete(unitsUrl, &grequests.RequestOptions{
+		JSON: body,
+	})
+	// парсинг ответа
+	var deleteResponse dto.DeleteUnitResponse
+	resp.JSON(&deleteResponse)
+	// проверка на ошибку
+	if deleteResponse.Err != "" {
+		http.Error(w, deleteResponse.Err, http.StatusInternalServerError)
 		return
 	}
-	var deleteResponse transport.DeleteUnitResponse
-	err = json.Unmarshal(resp.Bytes(), &deleteResponse)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	http.Redirect(w, r, "/product/units/", http.StatusSeeOther)
+	http.Redirect(w, r, "/product/units", http.StatusSeeOther)
 }
 
+// Обработчик страницы добавления единицы измерения
 func CreateUnitGetHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "../static/html/create-unit.html")
 }
 
+// Обработчик добавления единицы измерения
 func CreateUnitPostHandler(w http.ResponseWriter, r *http.Request) {
+	// парсинг наименования
 	unitName := r.FormValue("name")
-	if len(unitName) == 0 {
-		http.Error(w, errors.New(sharedUtils.FIELDS_VALIDATION_ERROR).Error(), http.StatusUnprocessableEntity)
+	if unitName == "" {
+		http.Error(w, base.FIELDS_VALIDATION_ERROR, http.StatusUnprocessableEntity)
 	}
-	request := transport.CreateUnitRequest{
+	// создание запроса
+	request := dto.CreateUnitRequest{
 		Unit: unitName,
 	}
+	// адрес бэка
 	unitsUrl := fmt.Sprintf("%s/units", utils.GetBackendAddress())
-	options := sharedUtils.CreateJsonRequestOption(request)
-	resp, err := grequests.Post(unitsUrl, options)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	var data transport.CreateUnitResponse
-	err = json.Unmarshal(resp.Bytes(), &data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if data.Err == nil {
-		http.Redirect(w, r, "/product/units/", http.StatusSeeOther)
+	resp, _ := grequests.Post(unitsUrl, &grequests.RequestOptions{
+		JSON: request,
+	})
+	// парсинг ответа
+	var data dto.CreateUnitResponse
+	resp.JSON(&data)
+	// проверка на ошибку
+	if data.Err == "" {
+		http.Redirect(w, r, "/product/units", http.StatusSeeOther)
 	} else {
-		http.Error(w, data.Err.Error(), http.StatusInternalServerError)
+		http.Error(w, data.Err, http.StatusInternalServerError)
 	}
 }
 
+// Обработчик страницы изменения единицы измерения
 func UpdateUnitGetHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(mux.Vars(r)["id"])
-	if err != nil {
-		http.Redirect(w, r, "/product/units/", http.StatusBadRequest)
+	// парсинг id
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	// получение единиц измерения с бэка
+	unitsResponse, _ := utils.GetUnitsFromBackend()
+	if unitsResponse.Err != "" {
+		http.Error(w, unitsResponse.Err, http.StatusInternalServerError)
 		return
 	}
-	units, err := utils.GetUnitsFromBackend()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// поиск запрашиваемой единицы измерения
 	var requestedUnit *domain.Unit
-	for i, unit := range units {
-		if units[i].Id == id {
+	for i, unit := range unitsResponse.Units {
+		if unitsResponse.Units[i].Id == id {
 			requestedUnit = &unit
 		}
 	}
+	// id не найден
 	if requestedUnit == nil {
 		http.Error(w, "the unit does not exist", http.StatusBadRequest)
 		return
 	}
-	updateUnitPage, err := template.ParseFiles("../static/html/update-unit.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// создание шаблона
+	updateUnitPage, _ := template.ParseFiles("../static/html/update-unit.html")
 	updateUnitPage.Execute(w, requestedUnit)
 }
 
+// Обработчик добавления единицы измерения
 func UpdateUnitPostHandler(w http.ResponseWriter, r *http.Request) {
+	// парсинг полей
 	unitId, err := strconv.Atoi(r.FormValue("id"))
 	unitName := r.FormValue("name")
-	if len(unitName) == 0 || err != nil {
-		http.Error(w, errors.New(sharedUtils.FIELDS_VALIDATION_ERROR).Error(), http.StatusUnprocessableEntity)
+	if unitName == "" || err != nil {
+		http.Error(w, base.FIELDS_VALIDATION_ERROR, http.StatusUnprocessableEntity)
 		return
 	}
-	unit := &domain.Unit{
+	unit := domain.Unit{
 		Id:   unitId,
 		Name: unitName,
 	}
-
+	// адрес бэка
 	unitsUrl := fmt.Sprintf("%s/units", utils.GetBackendAddress())
-	request := transport.UpdateUnitRequest{
+	// создание запроса
+	request := dto.UpdateUnitRequest{
 		Unit: unit,
 	}
-	options := &grequests.RequestOptions{
+	// отправка запроса и получение ответа
+	updateResponse, _ := grequests.Put(unitsUrl, &grequests.RequestOptions{
 		JSON: request,
-	}
-	_, err = grequests.Put(unitsUrl, options)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	})
+	// парсинг ответа
+	var data dto.UpdateUnitResponse
+	updateResponse.JSON(&data)
+	if data.Err != "" {
+		http.Error(w, data.Err, http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/product/units/", http.StatusSeeOther)
+	http.Redirect(w, r, "/product/units", http.StatusSeeOther)
 }
