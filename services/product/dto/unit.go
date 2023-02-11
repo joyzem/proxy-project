@@ -34,4 +34,11 @@ type (
 	DeleteUnitResponse struct {
 		Err string `json:"error,omitempty"`
 	}
+	UnitByIdRequest struct {
+		Id int `json:"id"`
+	}
+	UnitByIdResponse struct {
+		Unit *domain.Unit `json:"unit,omitempty"`
+		Err  string       `json:"error,omitempty"`
+	}
 )

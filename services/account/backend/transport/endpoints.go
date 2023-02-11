@@ -13,6 +13,7 @@ type Endpoints struct {
 	GetAccounts   endpoint.Endpoint
 	UpdateAccount endpoint.Endpoint
 	DeleteAccount endpoint.Endpoint
+	AccountById   endpoint.Endpoint
 }
 
 func MakeEndpoints(s service.Service) Endpoints {
@@ -21,6 +22,7 @@ func MakeEndpoints(s service.Service) Endpoints {
 		GetAccounts:   makeGetAccountsEndpoint(s),
 		UpdateAccount: makeUpdateAccountEndpoint(s),
 		DeleteAccount: makeDeleteAccountEndpoint(s),
+		AccountById:   makeAccountByIdEndpoint(s),
 	}
 }
 
@@ -52,5 +54,13 @@ func makeDeleteAccountEndpoint(s service.Service) endpoint.Endpoint {
 		req := request.(dto.DeleteAccountRequest)
 		err := s.DeleteAccount(req.Id)
 		return dto.DeleteAccountResponse{}, err
+	}
+}
+
+func makeAccountByIdEndpoint(s service.Service) endpoint.Endpoint {
+	return func(_ context.Context, request interface{}) (interface{}, error) {
+		req := request.(dto.AccountByIdRequest)
+		acc, err := s.AccountById(req.Id)
+		return dto.AccountByIdResponse{Account: acc}, err
 	}
 }

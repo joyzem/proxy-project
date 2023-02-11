@@ -20,7 +20,7 @@ func GetRouter() http.Handler {
 	// обработка POST запроса. Удаление товара
 	router.HandleFunc("/product/products/delete", handlers.DeleteProductHandler).Methods(http.MethodPost)
 	// обработка GET запроса. Страница добавления товара
-	router.HandleFunc("/product/products/create", handlers.CreateProductGetHandler)
+	router.HandleFunc("/product/products/create", handlers.CreateProductGetHandler).Methods(http.MethodGet)
 	// обработка POST запроса. Добавление товара
 	router.HandleFunc("/product/products/create", handlers.CreateProductPostHandler).Methods(http.MethodPost)
 	// обработка GET запроса. Страница изменения товара
@@ -33,7 +33,7 @@ func GetRouter() http.Handler {
 	// обработка POST запроса. Удаление единицы измерения
 	router.HandleFunc("/product/units/delete", handlers.DeleteUnitHandler).Methods(http.MethodPost)
 	// обработка GET запроса. Страница добавления единицы измерения
-	router.HandleFunc("/product/units/create", handlers.CreateUnitGetHandler)
+	router.HandleFunc("/product/units/create", handlers.CreateUnitGetHandler).Methods(http.MethodGet)
 	// обработка POST запроса. Добавление единицы измерения
 	router.HandleFunc("/product/units/create", handlers.CreateUnitPostHandler).Methods(http.MethodPost)
 	// обработка GET запроса. Страница изменения единицы измерения

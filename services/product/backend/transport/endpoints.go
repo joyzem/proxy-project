@@ -14,10 +14,12 @@ type Endpoints struct {
 	GetProducts   endpoint.Endpoint
 	UpdateProduct endpoint.Endpoint
 	DeleteProduct endpoint.Endpoint
+	ProductById   endpoint.Endpoint
 	CreateUnit    endpoint.Endpoint
 	GetUnits      endpoint.Endpoint
 	UpdateUnit    endpoint.Endpoint
 	DeleteUnit    endpoint.Endpoint
+	UnitById      endpoint.Endpoint
 }
 
 // Создает и возвращает набор эндпоинтов, используя сервис `s`.
@@ -30,10 +32,12 @@ func MakeEndpoints(s service.Service) Endpoints {
 		GetProducts:   makeGetProductsEndpoint(s),
 		UpdateProduct: makeUpdateProductEndpoint(s),
 		DeleteProduct: makeDeleteProductEndpoint(s),
+		ProductById:   makeProductByIdEndpoint(s),
 		CreateUnit:    makeCreateUnitEndpoint(s),
 		GetUnits:      makeGetUnitsEndpoint(s),
 		UpdateUnit:    makeUpdateUnitEndpoint(s),
 		DeleteUnit:    makeDeleteUnitEndpoint(s),
+		UnitById:      makeUnitByIdEndpoint(s),
 	}
 }
 
@@ -83,6 +87,15 @@ func makeDeleteProductEndpoint(s service.Service) endpoint.Endpoint {
 	}
 }
 
+// Возвращает endpoint, который возвращает товар по идентификатору
+func makeProductByIdEndpoint(s service.Service) endpoint.Endpoint {
+	return func(_ context.Context, request interface{}) (interface{}, error) {
+		req := request.(dto.ProductByIdRequest)
+		product, err := s.ProductById(req.Id)
+		return dto.ProductByIdResponse{Product: product}, err
+	}
+}
+
 // Возвращает endpoint, который удаляет единицу измерения с помощью сервиса `s`
 func makeDeleteUnitEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
@@ -128,5 +141,14 @@ func makeCreateUnitEndpoint(s service.Service) endpoint.Endpoint {
 		unit, err := s.CreateUnit(req.Unit)
 		// Возвращается ответ в форме `dto.CreateUnitResponse`
 		return dto.CreateUnitResponse{Unit: unit}, err
+	}
+}
+
+// Возвращает endpoint, который возвращает единицу измерения по идентификатору
+func makeUnitByIdEndpoint(s service.Service) endpoint.Endpoint {
+	return func(_ context.Context, request interface{}) (interface{}, error) {
+		req := request.(dto.UnitByIdRequest)
+		unit, err := s.UnitById(req.Id)
+		return dto.UnitByIdResponse{Unit: unit}, err
 	}
 }

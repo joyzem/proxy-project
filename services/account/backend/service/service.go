@@ -7,4 +7,5 @@ type Service interface {
 	GetAccounts() ([]domain.Account, error)
 	UpdateAccount(domain.Account) (*domain.Account, error)
 	DeleteAccount(int) error
+	AccountById(int) (*domain.Account, error)
 }

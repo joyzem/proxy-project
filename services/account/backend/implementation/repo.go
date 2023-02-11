@@ -18,7 +18,8 @@ func NewRepo(db *sql.DB) repo.AccountRepo {
 }
 
 func (r *repository) CreateAccount(acc domain.Account) (*domain.Account, error) {
-	sql := `INSERT INTO accounts (bank_name, bank_identity_number)
+	sql := `
+		INSERT INTO accounts (bank_name, bank_identity_number)
 		VALUES ($1, $2) RETURNING id
 	`
 	result, err := r.db.Prepare(sql)
@@ -31,18 +32,8 @@ func (r *repository) CreateAccount(acc domain.Account) (*domain.Account, error) 
 	if err := result.QueryRow(acc.BankName, acc.BankIdentityNumber).Scan(&insertedId); err != nil {
 		return nil, err
 	}
-	getAccountSql := `
-			SELECT * FROM accounts WHERE id = $1
-	`
-	insertedAccount := domain.Account{}
-	if err := r.db.QueryRow(getAccountSql, insertedId).Scan(
-		&insertedAccount.Id,
-		&insertedAccount.BankName,
-		&insertedAccount.BankIdentityNumber,
-	); err != nil {
-		return nil, err
-	}
-	return &insertedAccount, nil
+
+	return r.AccountById(insertedId)
 }
 
 func (r *repository) GetAccounts() ([]domain.Account, error) {
@@ -70,31 +61,16 @@ func (r *repository) UpdateAccount(acc domain.Account) (*domain.Account, error) 
 	sql := `
 		UPDATE accounts 
 			SET bank_name = $1, bank_identity_number = $2 
-			WHERE id = $3 
-		RETURNING id 
+		WHERE id = $3
 	`
-	result, err := r.db.Prepare(sql)
+	rows, err := r.db.Query(sql, acc.BankName, acc.BankIdentityNumber, acc.Id)
 	if err != nil {
 		return nil, err
 	}
-	defer result.Close()
 
-	var insertedId int
-	if err := result.QueryRow(acc.BankName, acc.BankIdentityNumber, acc.Id).Scan(&insertedId); err != nil {
-		return nil, err
-	}
-	getAccountSql := `
-		SELECT * FROM accounts WHERE id = $1
-	`
-	insertedAccount := domain.Account{}
-	if err := r.db.QueryRow(getAccountSql, insertedId).Scan(
-		&insertedAccount.Id,
-		&insertedAccount.BankName,
-		&insertedAccount.BankIdentityNumber,
-	); err != nil {
-		return nil, err
-	}
-	return &insertedAccount, nil
+	rows.Close()
+
+	return r.AccountById(acc.Id)
 }
 
 func (r *repository) DeleteAccount(id int) error {
@@ -102,8 +78,20 @@ func (r *repository) DeleteAccount(id int) error {
 		DELETE FROM accounts WHERE id = $1
 	`
 	_, err := r.db.Exec(sql, id)
-	if err != nil {
-		return err
+	return err
+}
+
+func (r *repository) AccountById(id int) (*domain.Account, error) {
+	sql := `
+		SELECT * FROM accounts WHERE id = $1
+	`
+	account := domain.Account{}
+	if err := r.db.QueryRow(sql, id).Scan(
+		&account.Id,
+		&account.BankName,
+		&account.BankIdentityNumber,
+	); err != nil {
+		return nil, err
 	}
-	return nil
+	return &account, nil
 }

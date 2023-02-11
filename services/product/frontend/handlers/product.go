@@ -18,14 +18,38 @@ import (
 // Обработчик страницы всех товаров
 func ProductsHandler(w http.ResponseWriter, r *http.Request) {
 	// получить товары с бэка
-	response, _ := utils.GetProductsFromBackend()
-	if response.Err != "" {
-		http.Error(w, response.Err, http.StatusInternalServerError)
+	products, _ := utils.GetProductsFromBackend()
+	if products.Err != "" {
+		http.Error(w, products.Err, http.StatusInternalServerError)
 		return
+	}
+	// получить единицы измерения с бэка
+	units, _ := utils.GetUnitsFromBackend()
+	if units.Err != "" {
+		http.Error(w, units.Err, http.StatusInternalServerError)
+		return
+	}
+	type ProductPageItemTemplate struct {
+		Product domain.Product
+		Unit    domain.Unit
+	}
+	templateItems := []ProductPageItemTemplate{}
+	for _, product := range products.Products {
+		templateItem := ProductPageItemTemplate{}
+		templateItem.Product = product
+		var productUnit domain.Unit
+		for _, unit := range units.Units {
+			if unit.Id == product.UnitId {
+				productUnit = unit
+				break
+			}
+		}
+		templateItem.Unit = productUnit
+		templateItems = append(templateItems, templateItem)
 	}
 	// создать шаблон
 	productPage, _ := template.ParseFiles("../static/html/products.html")
-	productPage.Execute(w, response.Products)
+	productPage.Execute(w, templateItems)
 }
 
 // Обработчик удаления товара
@@ -105,22 +129,16 @@ func CreateProductPostHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateProductGetHandler(w http.ResponseWriter, r *http.Request) {
 	// парсинг id
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-	// получение продуктов с бэка
-	getProductsResponse, _ := utils.GetProductsFromBackend()
-	if getProductsResponse.Err != "" {
-		http.Error(w, getProductsResponse.Err, http.StatusInternalServerError)
-		return
-	}
-	// поиск нужного продукта
-	var requestedProduct *domain.Product
-	for i, product := range getProductsResponse.Products {
-		if getProductsResponse.Products[i].Id == id {
-			requestedProduct = &product
-		}
-	}
+	// получение продукта с бэка
+	url := fmt.Sprintf("%s/products/%d", utils.GetBackendAddress(), id)
+	resp, _ := grequests.Get(url, &grequests.RequestOptions{
+		JSON: dto.ProductByIdRequest{Id: id},
+	})
+	var product dto.ProductByIdResponse
+	resp.JSON(&product)
 	// продукт не найден
-	if requestedProduct == nil {
-		http.Error(w, "the product does not exist", http.StatusBadRequest)
+	if product.Err != "" {
+		http.Error(w, product.Err, http.StatusBadRequest)
 		return
 	}
 	// получение единиц измерения с бэка
@@ -135,7 +153,7 @@ func UpdateProductGetHandler(w http.ResponseWriter, r *http.Request) {
 		Units   []domain.Unit
 	}
 	data := UpdateProductTemplate{
-		Product: requestedProduct,
+		Product: product.Product,
 		Units:   unitsResp.Units,
 	}
 	// шаблон страницы
@@ -157,12 +175,10 @@ func UpdateProductPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	product := domain.Product{
-		Id:    productId,
-		Name:  productName,
-		Price: productPrice,
-		Unit: domain.Unit{
-			Id: unitId,
-		},
+		Id:     productId,
+		Name:   productName,
+		Price:  productPrice,
+		UnitId: unitId,
 	}
 	// адрес бэка
 	productUrl := fmt.Sprintf("%s/products", utils.GetBackendAddress())

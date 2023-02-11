@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
@@ -64,6 +65,14 @@ func NewService(
 			options...,
 		))
 
+	router.Methods("GET").Path("/products/{id}").Handler(
+		kithttp.NewServer(
+			svcEndpoints.ProductById,
+			decodeProductByIdRequest,
+			base.EncodeResponse,
+			options...,
+		))
+
 	router.Methods("POST").Path("/units").Handler(
 		kithttp.NewServer(
 			svcEndpoints.CreateUnit,
@@ -95,6 +104,15 @@ func NewService(
 			base.EncodeResponse,
 			options...,
 		))
+
+	router.Methods("GET").Path("/units/{id}").Handler(
+		kithttp.NewServer(
+			svcEndpoints.UnitById,
+			decodeUnitByIdRequest,
+			base.EncodeResponse,
+			options...,
+		))
+
 	return router
 }
 
@@ -102,42 +120,68 @@ func NewService(
 // Приходит http.Request r, и он декодируется с помощью функции base.DecodeBody(r, &req), которая
 // возвращает требуемую структуру или ошибку, если она произошла
 
-func decodeCreateProductRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeCreateProductRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.CreateProductRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
 }
 
-func decodeGetProductsRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeGetProductsRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	// У этого запроса нет тела, и декодировать нечего
 	return dto.GetProductsRequest{}, nil
 }
 
-func decodeUpdateProductRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeUpdateProductRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.UpdateProductRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
 }
 
-func decodeDeleteProductRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeDeleteProductRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.DeleteProductRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
 }
 
-func decodeCreateUnitRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeProductByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return nil, err
+	}
+	req := dto.ProductByIdRequest{Id: id}
+	return req, nil
+}
+
+func decodeCreateUnitRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.CreateUnitRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
 }
 
-func decodeGetUnitsRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeGetUnitsRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.GetUnitsRequest
 	return req, nil
 }
 
-func decodeUpdateUnitRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeUpdateUnitRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.UpdateUnitRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
 }
 
-func decodeDeleteUnitRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeDeleteUnitRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.DeleteUnitRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
+}
+
+func decodeUnitByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return nil, err
+	}
+	req := dto.UnitByIdRequest{Id: id}
+	return req, nil
 }

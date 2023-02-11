@@ -14,7 +14,7 @@
 - *Backend* (серверная часть)
 - *База данных*
 
-<img src="/home/static/assets/схема-взаимодействия.png" style="display:block;margin:0 auto;width:80%;">
+<img src="/home/static/assets/interaction-scheme.png" style="display:block;margin:0 auto;width:80%;">
 
 Переходя по адресу в сети, пользователь через интернет передает запросы на сервер (компьютер, на котором работает веб-приложение). Тот адрес, который ввел пользователь, обрабатывается во *Frontend* части приложения:
 - Получение параметров;

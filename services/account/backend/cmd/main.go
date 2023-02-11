@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -17,6 +16,7 @@ import (
 )
 
 func main() {
+
 	db, err := base.ConnectToDb()
 	if err != nil {
 		base.LogError(err)
@@ -24,17 +24,15 @@ func main() {
 	}
 
 	if err := implementation.InitDatabase(*db); err != nil {
-		base.LogError(errors.New(err.Error() + ": failed init"))
+		base.LogError(err)
 	}
-	defer db.Close()
 
-	svc := implementation.NewService(implementation.NewRepo(db))
+	repo := implementation.NewRepo(db)
+	svc := implementation.NewService(repo)
 	endpoints := transport.MakeEndpoints(svc)
 
-	var handler http.Handler
-	{
-		handler = httptransport.NewService(endpoints, []kithttp.ServerOption{})
-	}
+	handler := httptransport.NewService(endpoints, []kithttp.ServerOption{})
+
 	fmt.Println("Listening on 7073...")
 	if err := http.ListenAndServe(":7073", handler); err != nil {
 		base.LogError(err)

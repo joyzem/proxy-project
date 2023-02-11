@@ -10,10 +10,10 @@ import (
 )
 
 func main() {
-	router := router.GetRouter()
+	handler := router.GetRouter()
 
 	fmt.Println("Listening on 8083...")
-	if err := http.ListenAndServe(":8083", router); err != nil {
+	if err := http.ListenAndServe(":8083", handler); err != nil {
 		base.LogError(err)
 		os.Exit(-1)
 	}

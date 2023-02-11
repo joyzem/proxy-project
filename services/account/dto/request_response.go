@@ -30,4 +30,11 @@ type (
 	DeleteAccountResponse struct {
 		Err string `json:"error,omitempty"`
 	}
+	AccountByIdRequest struct {
+		Id int `json:"id"`
+	}
+	AccountByIdResponse struct {
+		Account *domain.Account `json:"account"`
+		Err     string          `json:"error,omitempty"`
+	}
 )

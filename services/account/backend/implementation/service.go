@@ -52,3 +52,12 @@ func (s *service) DeleteAccount(id int) error {
 	}
 	return nil
 }
+
+func (s *service) AccountById(id int) (*domain.Account, error) {
+	acc, err := s.accountRepo.AccountById(id)
+	if err != nil {
+		base.LogError(err)
+		return nil, err
+	}
+	return acc, nil
+}

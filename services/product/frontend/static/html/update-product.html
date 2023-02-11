@@ -35,7 +35,7 @@
                     <div class="row">
                         <div class="col s4">
                             <label>Единицы измерения</label>
-                            {{ $productUnitId := .Product.Unit.Id }}
+                            {{ $productUnitId := .Product.UnitId }}
                             <select name="unit_id" class="browser-default">
                                 {{ range .Units }}
                                 {{ if eq .Id $productUnitId }}

@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
@@ -15,10 +16,12 @@ func NewService(
 	svcEndpoints transport.Endpoints,
 	options []kithttp.ServerOption,
 ) http.Handler {
+
 	router := mux.NewRouter()
 	errorEncoder := kithttp.ServerErrorEncoder(base.EncodeErrorResponse)
 
 	options = append(options, errorEncoder)
+
 	router.Methods("POST").Path("/accounts").Handler(
 		kithttp.NewServer(
 			svcEndpoints.CreateAccount,
@@ -51,24 +54,45 @@ func NewService(
 			options...,
 		))
 
+	router.Methods("GET").Path("/accounts/{id}").Handler(
+		kithttp.NewServer(
+			svcEndpoints.AccountById,
+			decodeAccountByIdRequest,
+			base.EncodeResponse,
+			options...,
+		))
+
 	return router
 }
 
-func decodeCreateAccountRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeCreateAccountRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.CreateAccountRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
 }
 
-func decodeGetAccountsRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeGetAccountsRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	return dto.GetAccountsRequest{}, nil
 }
 
-func decodeDeleteAccountRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeDeleteAccountRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.DeleteAccountRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
 }
 
-func decodeUpdateAccountRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+func decodeUpdateAccountRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.UpdateAccountRequest
-	return base.DecodeBody(r, &req)
+	err := base.DecodeBody(r, &req)
+	return req, err
+}
+
+func decodeAccountByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return nil, err
+	}
+	req := dto.AccountByIdRequest{Id: id}
+	return req, nil
 }

@@ -43,7 +43,7 @@ func GetProductsFromBackend() (*dto.GetProductsResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	// парсинг ответа
+	// парсинг
 	var data dto.GetProductsResponse
 	if err := resp.JSON(&data); err != nil {
 		return nil, err

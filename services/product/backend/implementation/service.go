@@ -23,7 +23,7 @@ func NewService(productRepo repo.ProductRepo, unitRepo repo.UnitRepo) svc.Servic
 
 // CreateProduct - создает новый товар с переданными параметрами (name, price, unitId)
 func (s *service) CreateProduct(name string, price int, unitId int) (*domain.Product, error) {
-	p := domain.Product{Name: name, Price: price, Unit: domain.Unit{Id: unitId}}
+	p := domain.Product{Name: name, Price: price, UnitId: unitId}
 	createdProduct, err := s.productRepo.CreateProduct(p)
 	if err != nil {
 		base.LogError(err)
@@ -43,8 +43,8 @@ func (s *service) GetProducts() ([]domain.Product, error) {
 }
 
 // UpdateProduct - обновляет информацию о товаре
-func (s *service) UpdateProduct(oldProduct domain.Product) (*domain.Product, error) {
-	updatedProduct, err := s.productRepo.UpdateProduct(oldProduct)
+func (s *service) UpdateProduct(newProduct domain.Product) (*domain.Product, error) {
+	updatedProduct, err := s.productRepo.UpdateProduct(newProduct)
 	if err != nil {
 		base.LogError(err)
 		return nil, err
@@ -59,6 +59,16 @@ func (s *service) DeleteProduct(id int) error {
 		return err
 	}
 	return nil
+}
+
+// ProductById - возвращает товар по идентификатору
+func (s *service) ProductById(id int) (*domain.Product, error) {
+	product, err := s.productRepo.ProductById(id)
+	if err != nil {
+		base.LogError(err)
+		return nil, err
+	}
+	return product, nil
 }
 
 // CreateUnit - добавляет единицу измерения.
@@ -98,4 +108,14 @@ func (s *service) DeleteUnit(id int) error {
 		return err
 	}
 	return nil
+}
+
+// UnitById - возвращает единицу измерения по идентификатору
+func (s *service) UnitById(id int) (*domain.Unit, error) {
+	unit, err := s.unitRepo.UnitById(id)
+	if err != nil {
+		base.LogError(err)
+		return nil, err
+	}
+	return unit, nil
 }

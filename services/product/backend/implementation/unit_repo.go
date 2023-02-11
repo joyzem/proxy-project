@@ -34,25 +34,13 @@ func (r *unitRepository) CreateUnit(unit string) (*domain.Unit, error) {
 	defer result.Close()
 
 	// Выполнение запроса и сканирование результата в insertedId
-	var insertedId int64
+	var insertedId int
 	if err := result.QueryRow(unit).Scan(&insertedId); err != nil {
 		return nil, err
 	}
 
-	// SQL-запрос для получения данных новой единицы измерения
-	insertedUnitSql := `
-			SELECT * FROM units WHERE id = $1	
-	`
-
-	// Инициализация переменной с новой единицей измерения
-	createdUnit := domain.Unit{}
-
-	// Выполнение запроса и сканирование результата
-	if err := r.db.QueryRow(insertedUnitSql, insertedId).Scan(&createdUnit.Id, &createdUnit.Name); err != nil {
-		return nil, err
-	}
-
-	return &createdUnit, nil
+	// Вернуть новую единицу измерения
+	return r.UnitById(insertedId)
 }
 
 // GetUnits возвращает список всех единиц измерения из базы данных или ошибку, если она возникает.
@@ -95,33 +83,19 @@ func (r *unitRepository) GetUnits() ([]domain.Unit, error) {
 func (r *unitRepository) UpdateUnit(unit domain.Unit) (*domain.Unit, error) {
 	// SQL-запрос для обновления информации об единице измерения
 	sql := `
-			UPDATE units SET name = $1 WHERE id = $2 RETURNING id
+			UPDATE units SET name = $1 WHERE id = $2
 	`
-	// Подготовка запроса
-	result, err := r.db.Prepare(sql)
+	// Выполнение запроса
+	rows, err := r.db.Query(sql, unit.Name, unit.Id)
 	if err != nil {
 		return nil, err
 	}
-	defer result.Close()
 
-	// Выполнение запроса и сканирование результата (ID)
-	var updatedId int
-	if err := result.QueryRow(unit.Name, unit.Id).Scan(&updatedId); err != nil {
-		return nil, err
-	}
+	// Закрыть соединение, чтобы осуществить следующий запрос
+	rows.Close()
 
-	// SQL-запрос для получения данных обновленной единицы измерения
-	updatedUnitSql := `
-			SELECT * FROM units WHERE id = $1	
-	`
-
-	// Инициализация переменной с обновленной единицей измерения
-	updatedUnit := domain.Unit{}
-	if err := r.db.QueryRow(updatedUnitSql, updatedId).Scan(&updatedUnit.Id, &updatedUnit.Name); err != nil {
-		return nil, err
-	}
-
-	return &updatedUnit, nil
+	// Вернуть обновленную единицу измерения
+	return r.UnitById(unit.Id)
 }
 
 // DeleteUnit выполняет удаление единицы измерения из базы данных по её ID.
@@ -132,4 +106,19 @@ func (r *unitRepository) DeleteUnit(id int) error {
 	`
 	_, err := r.db.Exec(sql, id)
 	return err
+}
+
+func (r *unitRepository) UnitById(id int) (*domain.Unit, error) {
+	// SQL-запрос для получения единицы измерения
+	sql := `
+			SELECT * FROM units WHERE id = $1	
+	`
+
+	// Инициализация переменной
+	unit := domain.Unit{}
+	if err := r.db.QueryRow(sql, id).Scan(&unit.Id, &unit.Name); err != nil {
+		return nil, err
+	}
+
+	return &unit, nil
 }

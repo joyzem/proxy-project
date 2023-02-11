@@ -28,18 +28,18 @@
           </thead>
           {{range . }}
           <tr>
-            <td>{{.Name}}</td>
-            <td>{{.Price}}</td>
+            <td>{{.Product.Name}}</td>
+            <td>{{.Product.Price}}</td>
             <td>{{.Unit.Name}}</td>
             <td>
               <div class="valign-wrapper right">
                 <form action="/product/products/delete" method="post" class="col">
-                  <input name="id" type="hidden" value="{{ .Id }}">
+                  <input name="id" type="hidden" value="{{ .Product.Id }}">
                   <button type="submit" class="btn-floating z-depth-0 waves-effect waves-light margin-right">
                     <i class="material-icons red">delete</i>
                   </button>
                 </form>
-                <a href="/product/products/update/{{.Id}}" class="col">
+                <a href="/product/products/update/{{.Product.Id}}" class="col">
                   <button class="btn-floating waves-effect z-depth-0 waves-light ">
                     <i class="material-icons orange">edit</i>
                   </button>

@@ -18,14 +18,14 @@ import (
 // Обработчик страницы единиц измерения
 func UnitsHandler(w http.ResponseWriter, r *http.Request) {
 	// получение ед. измерения
-	units, _ := utils.GetUnitsFromBackend()
-	if units.Err != "" {
-		http.Error(w, units.Err, http.StatusInternalServerError)
+	unitsRepo, _ := utils.GetUnitsFromBackend()
+	if unitsRepo.Err != "" {
+		http.Error(w, unitsRepo.Err, http.StatusInternalServerError)
 		return
 	}
 	// создание шаблона
 	unitsPage, _ := template.ParseFiles("../static/html/units.html")
-	unitsPage.Execute(w, units.Units)
+	unitsPage.Execute(w, unitsRepo.Units)
 }
 
 // Обработчик удаления единицы измерения
@@ -62,6 +62,7 @@ func CreateUnitPostHandler(w http.ResponseWriter, r *http.Request) {
 	unitName := r.FormValue("name")
 	if unitName == "" {
 		http.Error(w, base.FIELDS_VALIDATION_ERROR, http.StatusUnprocessableEntity)
+		return
 	}
 	// создание запроса
 	request := dto.CreateUnitRequest{
@@ -87,27 +88,22 @@ func CreateUnitPostHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateUnitGetHandler(w http.ResponseWriter, r *http.Request) {
 	// парсинг id
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-	// получение единиц измерения с бэка
-	unitsResponse, _ := utils.GetUnitsFromBackend()
-	if unitsResponse.Err != "" {
-		http.Error(w, unitsResponse.Err, http.StatusInternalServerError)
-		return
-	}
+	// получение единицы измерения с бэка
+	url := fmt.Sprintf("%s/units/%d", utils.GetBackendAddress(), id)
+	resp, _ := grequests.Get(url, &grequests.RequestOptions{
+		JSON: dto.UnitByIdRequest{Id: id},
+	})
 	// поиск запрашиваемой единицы измерения
-	var requestedUnit *domain.Unit
-	for i, unit := range unitsResponse.Units {
-		if unitsResponse.Units[i].Id == id {
-			requestedUnit = &unit
-		}
-	}
-	// id не найден
-	if requestedUnit == nil {
+	var unit dto.UnitByIdResponse
+	// unit не найден
+	resp.JSON(&unit)
+	if unit.Unit == nil {
 		http.Error(w, "the unit does not exist", http.StatusBadRequest)
 		return
 	}
 	// создание шаблона
 	updateUnitPage, _ := template.ParseFiles("../static/html/update-unit.html")
-	updateUnitPage.Execute(w, requestedUnit)
+	updateUnitPage.Execute(w, unit.Unit)
 }
 
 // Обработчик добавления единицы измерения

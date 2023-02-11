@@ -29,6 +29,21 @@ services:
       - ./vendor:/go/pkg/mod
     ports:
       - "8081:8081"
+  organization-back:
+      image: joyzem/project:organization-back
+      container_name: organization-back
+      build: 
+        context: .
+        dockerfile: ./services/organization/backend/cmd/Dockerfile
+      environment:
+        - DATABASE_HOST=database
+        - DATABASE_USER=user
+      volumes:
+        - ./vendor:/go/pkg/mod
+      ports:
+        - "7072:7072"
+      depends_on:
+        - database
   organization-front:
     image: joyzem/project:organization-front
     container_name: organization-front
@@ -79,6 +94,19 @@ services:
       - ./vendor:/go/pkg/mod
     ports:
       - "8084:8084"
+  customer-back:
+    image: joyzem/project:customer-back
+    container_name: customer-back
+    build:
+      context: .
+      dockerfile: ./services/customer/backend/cmd/Dockerfile
+    environment:
+      - DATABASE_HOST=database
+      - DATABASE_USER=user
+    volumes:
+      - ./vendor:/go/pkg/mod
+    ports:
+      - "7075:7075"
   customer-front:
     image: joyzem/project:customer-front
     container_name: customer-front
@@ -120,7 +148,7 @@ services:
     ports:
       - "80:80"
   database:
-    image: postgres:latest
+    image: postgres:15.1
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: qwerty

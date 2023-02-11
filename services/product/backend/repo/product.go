@@ -10,9 +10,11 @@ import (
 // - GetProducts: возвращает список всех товаров в базе данных.
 // - UpdateProduct: обновляет информацию о товаре в базе данных.
 // - DeleteProduct: удаляет товар из базы данных по его идентификатору.
+// - ProductById: получает товар по его идентификатору.
 type ProductRepo interface {
 	CreateProduct(domain.Product) (*domain.Product, error)
 	GetProducts() ([]domain.Product, error)
 	UpdateProduct(domain.Product) (*domain.Product, error)
 	DeleteProduct(int) error
+	ProductById(int) (*domain.Product, error)
 }

@@ -38,4 +38,11 @@ type (
 	DeleteProductResponse struct {
 		Err string `json:"error,omitempty"`
 	}
+	ProductByIdRequest struct {
+		Id int `json:"id"`
+	}
+	ProductByIdResponse struct {
+		Product *domain.Product `json:"product,omitempty"`
+		Err     string          `json:"error,omitempty"`
+	}
 )
